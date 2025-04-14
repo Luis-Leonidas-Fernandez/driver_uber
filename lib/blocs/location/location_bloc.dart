@@ -62,10 +62,23 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
   void sendPeriodicPosition() {
    
     timer = Timer.periodic(const Duration(minutes: 1), (timer) async {
-      print(timer.tick);
+         print('🔄 Tick #${timer.tick}');
+        //  if (timer != null) {
+        //  print('⚠️ Timer ya está activo');
+        //  return;
+        // }
     
-         final position = state.lastKnownLocation!;       
-        
+         final position = state.lastKnownLocation!;
+
+         print(' 🟢 [PERIODIC POSITION :] $position');  
+
+         if (position == null) {
+         print('❌ No hay posición disponible');
+         return;
+         }    
+
+         print('📍 Posición actual: ${position.latitude}, ${position.longitude}');
+         
          sendLocationDriver(position);
         
       //}
@@ -86,8 +99,13 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
     await Future.delayed(const Duration(seconds: 2));
 
     socket!.emit('driver-location',
-        {'mensaje': data, 'idDriver': idUser, 'idOrder': idOrder});
+        {
+          'mensaje': data,
+          'idDriver': idUser,
+          'idOrder': idOrder});
     await Future.delayed(const Duration(seconds: 2));
+    print('🛰️ Enviando ubicación al backend...');
+
   }
 
   void stopPeriodicTask() {

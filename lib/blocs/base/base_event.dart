@@ -14,3 +14,13 @@ class AddBaseEvent extends BaseEvent{
   const AddBaseEvent(this.baseSelected);
 
 }
+
+class SetBasesDisponiblesEvent extends BaseEvent {
+  final List<BaseConductor> basesDisponibles;
+  const SetBasesDisponiblesEvent(this.basesDisponibles);
+
+  @override
+  List<Object> get props => [basesDisponibles];
+}
+
+class ClearBaseEvent extends BaseEvent {}

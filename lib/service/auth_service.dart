@@ -32,25 +32,15 @@ set autenticando( bool valor ) {
   
 
     //Registro de Usuario
-    Future<Usuario> register(String nombre, String email, String password,
-    String apellido, String nacimiento, String domicilio,
-    String vehiculo, String modelo, String patente, String licencia ) async {
-
+    Future<Usuario> register( Map<String, dynamic> userData ) async {
+   
    
 
-    final data = {'nombre': nombre,'email': email,'password': password,
-    'apellido': apellido, 'nacimiento': nacimiento, 'domicilio': domicilio,
-    'vehiculo': vehiculo, 'modelo': modelo, 'patente': patente,  'licencia': licencia
-    };        
-
-    final body = jsonEncode(data);
+    final body = jsonEncode(userData);
     final headers = {'Content-Type': 'application/json'};
 
     final resp = await http.post(Uri.parse('${Environment.apiUrl }/logindriver/newdriver'), body: body, headers: headers);       
-    
-    final obj = resp.body.toString();
-
-    print("RESULTADO DE REGISTRO USUARIO: $obj");
+   
 
     if ( resp.statusCode == 200 ) {
     

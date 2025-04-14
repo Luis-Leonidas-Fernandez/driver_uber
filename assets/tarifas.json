@@ -1,0 +1,514 @@
+[
+  {
+    "puntos": 1.0,
+    "precio": 1700
+  },
+  {
+    "puntos": 1.1,
+    "precio": 1800
+  },
+  {
+    "puntos": 1.2,
+    "precio": 1900
+  },
+  {
+    "puntos": 1.3,
+    "precio": 2000
+  },
+  {
+    "puntos": 1.4,
+    "precio": 2100
+  },
+  {
+    "puntos": 1.5,
+    "precio": 2200
+  },
+  {
+    "puntos": 1.6,
+    "precio": 2300
+  },
+  {
+    "puntos": 1.7,
+    "precio": 2300
+  },
+  {
+    "puntos": 1.8,
+    "precio": 2400
+  },
+  {
+    "puntos": 1.9,
+    "precio": 2500
+  },
+  {
+    "puntos": 2.0,
+    "precio": 2600
+  },
+  {
+    "puntos": 2.1,
+    "precio": 2700
+  },
+  {
+    "puntos": 2.2,
+    "precio": 2800
+  },
+  {
+    "puntos": 2.3,
+    "precio": 2900
+  },
+  {
+    "puntos": 2.4,
+    "precio": 3000
+  },
+  {
+    "puntos": 2.5,
+    "precio": 3000
+  },
+  {
+    "puntos": 2.6,
+    "precio": 3100
+  },
+  {
+    "puntos": 2.7,
+    "precio": 3200
+  },
+  {
+    "puntos": 2.8,
+    "precio": 3300
+  },
+  {
+    "puntos": 2.9,
+    "precio": 3400
+  },
+  {
+    "puntos": 3.0,
+    "precio": 3500
+  },
+  {
+    "puntos": 3.1,
+    "precio": 3600
+  },
+  {
+    "puntos": 3.2,
+    "precio": 3700
+  },
+  {
+    "puntos": 3.3,
+    "precio": 3800
+  },
+  {
+    "puntos": 3.4,
+    "precio": 3900
+  },
+  {
+    "puntos": 3.5,
+    "precio": 4000
+  },
+  {
+    "puntos": 3.6,
+    "precio": 4100
+  },
+  {
+    "puntos": 3.7,
+    "precio": 4200
+  },
+  {
+    "puntos": 3.8,
+    "precio": 4300
+  },
+  {
+    "puntos": 3.9,
+    "precio": 4400
+  },
+  {
+    "puntos": 4.0,
+    "precio": 4500
+  },
+  {
+    "puntos": 4.1,
+    "precio": 4600
+  },
+  {
+    "puntos": 4.2,
+    "precio": 4700
+  },
+  {
+    "puntos": 4.3,
+    "precio": 4800
+  },
+  {
+    "puntos": 4.4,
+    "precio": 4900
+  },
+  {
+    "puntos": 4.5,
+    "precio": 5000
+  },
+  {
+    "puntos": 4.6,
+    "precio": 5100
+  },
+  {
+    "puntos": 4.7,
+    "precio": 5200
+  },
+  {
+    "puntos": 4.8,
+    "precio": 5300
+  },
+  {
+    "puntos": 4.9,
+    "precio": 5400
+  },
+  {
+    "puntos": 5.0,
+    "precio": 5500
+  },
+  {
+    "puntos": 5.1,
+    "precio": 5600
+  },
+  {
+    "puntos": 5.2,
+    "precio": 5700
+  },
+  {
+    "puntos": 5.3,
+    "precio": 5800
+  },
+  {
+    "puntos": 5.4,
+    "precio": 5900
+  },
+  {
+    "puntos": 5.5,
+    "precio": 6000
+  },
+  {
+    "puntos": 5.6,
+    "precio": 6100
+  },
+  {
+    "puntos": 5.7,
+    "precio": 6200
+  },
+  {
+    "puntos": 5.8,
+    "precio": 6300
+  },
+  {
+    "puntos": 5.9,
+    "precio": 6400
+  },
+  {
+    "puntos": 6.0,
+    "precio": 6500
+  },
+  {
+    "puntos": 6.1,
+    "precio": 6600
+  },
+  {
+    "puntos": 6.2,
+    "precio": 6700
+  },
+  {
+    "puntos": 6.3,
+    "precio": 6800
+  },
+  {
+    "puntos": 6.4,
+    "precio": 6900
+  },
+  {
+    "puntos": 6.5,
+    "precio": 7000
+  },
+  {
+    "puntos": 6.6,
+    "precio": 7100
+  },
+  {
+    "puntos": 6.7,
+    "precio": 7200
+  },
+  {
+    "puntos": 6.8,
+    "precio": 7300
+  },
+  {
+    "puntos": 6.9,
+    "precio": 7400
+  },
+  {
+    "puntos": 7.0,
+    "precio": 7500
+  },
+  {
+    "puntos": 7.1,
+    "precio": 7600
+  },
+  {
+    "puntos": 7.2,
+    "precio": 7700
+  },
+  {
+    "puntos": 7.3,
+    "precio": 7800
+  },
+  {
+    "puntos": 7.4,
+    "precio": 7900
+  },
+  {
+    "puntos": 7.5,
+    "precio": 8000
+  },
+  {
+    "puntos": 7.6,
+    "precio": 8100
+  },
+  {
+    "puntos": 7.7,
+    "precio": 8200
+  },
+  {
+    "puntos": 7.8,
+    "precio": 8300
+  },
+  {
+    "puntos": 7.9,
+    "precio": 8400
+  },
+  {
+    "puntos": 8.0,
+    "precio": 8500
+  },
+  {
+    "puntos": 8.1,
+    "precio": 8600
+  },
+  {
+    "puntos": 8.2,
+    "precio": 8700
+  },
+  {
+    "puntos": 8.3,
+    "precio": 8800
+  },
+  {
+    "puntos": 8.4,
+    "precio": 8900
+  },
+  {
+    "puntos": 8.5,
+    "precio": 9000
+  },
+  {
+    "puntos": 8.6,
+    "precio": 9100
+  },
+  {
+    "puntos": 8.7,
+    "precio": 9200
+  },
+  {
+    "puntos": 8.8,
+    "precio": 9300
+  },
+  {
+    "puntos": 8.9,
+    "precio": 9400
+  },
+  {
+    "puntos": 9.0,
+    "precio": 9500
+  },
+  {
+    "puntos": 9.1,
+    "precio": 9600
+  },
+  {
+    "puntos": 9.2,
+    "precio": 9700
+  },
+  {
+    "puntos": 9.3,
+    "precio": 9800
+  },
+  {
+    "puntos": 9.4,
+    "precio": 9900
+  },
+  {
+    "puntos": 9.5,
+    "precio": 10000
+  },
+  {
+    "puntos": 9.6,
+    "precio": 10200
+  },
+  {
+    "puntos": 9.7,
+    "precio": 10300
+  },
+  {
+    "puntos": 9.8,
+    "precio": 10400
+  },
+  {
+    "puntos": 9.9,
+    "precio": 10500
+  },
+  {
+    "puntos": 10.0,
+    "precio": 10600
+  },
+  {
+    "puntos": 10.1,
+    "precio": 10700
+  },
+  {
+    "puntos": 10.2,
+    "precio": 10800
+  },
+  {
+    "puntos": 10.3,
+    "precio": 10900
+  },
+  {
+    "puntos": 10.4,
+    "precio": 11000
+  },
+  {
+    "puntos": 10.5,
+    "precio": 11100
+  },
+  {
+    "puntos": 10.6,
+    "precio": 11200
+  },
+  {
+    "puntos": 10.7,
+    "precio": 11300
+  },
+  {
+    "puntos": 10.8,
+    "precio": 11400
+  },
+  {
+    "puntos": 10.9,
+    "precio": 11500
+  },
+  {
+    "puntos": 11.0,
+    "precio": 11600
+  },
+  {
+    "puntos": 11.1,
+    "precio": 11700
+  },
+  {
+    "puntos": 11.2,
+    "precio": 11800
+  },
+  {
+    "puntos": 11.3,
+    "precio": 11900
+  },
+  {
+    "puntos": 11.4,
+    "precio": 12000
+  },
+  {
+    "puntos": 11.5,
+    "precio": 12100
+  },
+  {
+    "puntos": 11.6,
+    "precio": 12200
+  },
+  {
+    "puntos": 11.7,
+    "precio": 12300
+  },
+  {
+    "puntos": 11.8,
+    "precio": 12400
+  },
+  {
+    "puntos": 11.9,
+    "precio": 12500
+  },
+  {
+    "puntos": 12.0,
+    "precio": 12600
+  },
+  {
+    "puntos": 12.1,
+    "precio": 12700
+  },
+  {
+    "puntos": 12.2,
+    "precio": 12800
+  },
+  {
+    "puntos": 12.3,
+    "precio": 12900
+  },
+  {
+    "puntos": 12.4,
+    "precio": 13000
+  },
+  {
+    "puntos": 12.5,
+    "precio": 13100
+  },
+  {
+    "puntos": 12.6,
+    "precio": 13200
+  },
+  {
+    "puntos": 12.7,
+    "precio": 13300
+  },
+  {
+    "puntos": 12.8,
+    "precio": 13400
+  },
+  {
+    "puntos": 12.9,
+    "precio": 13500
+  },
+  {
+    "puntos": 13.0,
+    "precio": 13600
+  },
+  {
+    "puntos": 13.1,
+    "precio": 13700
+  },
+  {
+    "puntos": 13.2,
+    "precio": 13800
+  },
+  {
+    "puntos": 13.3,
+    "precio": 13900
+  },
+  {
+    "puntos": 13.4,
+    "precio": 14000
+  },
+  {
+    "puntos": 13.5,
+    "precio": 14100
+  },
+  {
+    "puntos": 13.6,
+    "precio": 14200
+  },
+  {
+    "puntos": 13.7,
+    "precio": 14300
+  }
+]

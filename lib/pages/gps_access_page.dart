@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inri_driver/blocs/gps/gps_bloc.dart';
+import 'package:inri_driver/service/background_service.dart';
 
 class GpsAccessPage extends StatelessWidget {
   const GpsAccessPage({Key? key}) : super(key: key);
@@ -13,7 +14,7 @@ class GpsAccessPage extends StatelessWidget {
           builder: (context, state) { 
 
            final gpsEnabled = state.gpsModel?.isGpsEnabled?? false;
-
+           print('gpsacces page gps enable: $gpsEnabled');
 
            return gpsEnabled == false
            ? const _EnableGpsMessage()
@@ -40,10 +41,16 @@ class _AccessButton extends StatelessWidget {
         color: Colors.black,
         shape: const StadiumBorder(),
         elevation: 0,
-        onPressed: (){
+        onPressed: () async{
           //solicita privilegios de ubicacion
           final gpsBloc = BlocProvider.of<GpsBloc>(context);
           gpsBloc.askGpsAccess();
+          
+          final gps = gpsBloc.state.gpsModel;
+          
+          if (gps != null && gps.isGpsEnabled == true && gps.isGpsPermissionGranted == true) {
+          await BackgroundService.instance.initializeService(); // ✅ Inicia servicio
+         }
         },
         child:  const Text('Solicitar Acceso',
         style:  TextStyle(color: Colors.white ))

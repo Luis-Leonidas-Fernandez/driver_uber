@@ -17,7 +17,7 @@ class LoadingPage extends StatelessWidget {
 
             final gpsEnabled = state.gpsModel?.isGpsEnabled?? false;
             final gpsGranted = state.gpsModel?.isGpsPermissionGranted ?? false;
-          
+            print('gps enable: $gpsEnabled gps granted : $gpsGranted');
             return gpsEnabled && gpsGranted == true
             ? const NotificationsAccessPage()
             : const GpsAccessPage();           

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inri_driver/blocs/blocs.dart';
-import 'package:inri_driver/pages/home_page.dart';
-
+import 'package:inri_driver/pages/create_base.dart';
 
 
 class NotificationsAccessPage extends StatelessWidget {
@@ -17,10 +16,9 @@ class NotificationsAccessPage extends StatelessWidget {
 
             final notificationEnabled = state.notificationModel?.isNotificationPermissionGranted?? false;            
 
-           /* debugPrint("NOTIFICACION HABILITADA: $notificationEnabled");  */   
-
+           print('notificacion habilitada : $notificationEnabled');
            return notificationEnabled == true
-           ? const HomePage()
+           ? const BuildCreateBasePage()
            : const _AccessNotificationButton(); 
           }
           )
@@ -45,7 +43,7 @@ class _AccessNotificationButton extends StatelessWidget {
         shape: const StadiumBorder(),
         elevation: 0,
         onPressed: (){
-          //solicita privilegios de ubicacion
+          //solicita privilegios de nontificacion
           final notificationBloc = BlocProvider.of<NotificationBloc>(context);
            
           notificationBloc.askNotificationAccess();

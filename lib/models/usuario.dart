@@ -81,4 +81,41 @@ class Usuario {
         "base": base,
 
     };
+
+  Usuario copyWith({
+  String? email,
+  String? nombre,
+  String? apellido,
+  String? nacimiento,
+  String? domicilio,
+  String? vehiculo,
+  String? modelo,
+  String? patente,
+  String? licencia,
+  String? id,
+  String? urlMapbox,
+  String? tokenMapBox,
+  String? idMapBox,
+  String? mapToken,
+  String? base,
+}) {
+  return Usuario(
+    email: email ?? this.email,
+    nombre: nombre ?? this.nombre,
+    apellido: apellido ?? this.apellido,
+    nacimiento: nacimiento ?? this.nacimiento,
+    domicilio: domicilio ?? this.domicilio,
+    vehiculo: vehiculo ?? this.vehiculo,
+    modelo: modelo ?? this.modelo,
+    patente: patente ?? this.patente,
+    licencia: licencia ?? this.licencia,
+    id: id ?? this.id,
+    urlMapbox: urlMapbox ?? this.urlMapbox,
+    tokenMapBox: tokenMapBox ?? this.tokenMapBox,
+    idMapBox: idMapBox ?? this.idMapBox,
+    mapToken: mapToken ?? this.mapToken,
+    base: base ?? this.base,
+  );
+}
+  
 }

@@ -1,6 +1,7 @@
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:inri_driver/models/login.dart';
+import 'package:inri_driver/controllers/register_user_controllers.dart';
+//import 'package:inri_driver/models/login.dart';
 import 'package:inri_driver/models/usuario.dart';
 import 'package:inri_driver/service/auth_service.dart';
 
@@ -9,80 +10,76 @@ part 'auth_state.dart';
 
 class AuthBloc extends HydratedBloc<AuthEvent, AuthState> {
 
+  final RegisterUserController registerUserController;
   AuthService authService;
 
-  AuthBloc({required this.authService}) : super(const AuthState(authenticando: false, usuario:  null)) {
-    
+  AuthBloc(
+    {required this.authService,
+    required this.registerUserController
+    }) : super(const AuthState(authenticando: false, usuario:  null)) {
+
+    on<RegisterUserEvent>(_sendUser);
     on<OnAuthenticatingEvent>((event, emit) => emit(state.copyWith(autenticando: true)));
     on<OnClearUserSessionEvent>((event, emit) => emit(const UserSessionInitialState()));
-    on<OnAddUserSessionEvent>((event, emit) { 
-    
+    on<OnAddUserSessionEvent>((event, emit) {     
     emit(state.copyWith(    
       usuario: event.usuario,
       autenticando: true,    
     ));
-  });
+    });
+
+    on<OnUpdateUserEvent>((event, emit) {
+    emit(state.copyWith(usuario: event.usuarioActualizado));
+    });
+
   }
 
-
+  
 
   @override
   AuthState? fromJson(Map<String, dynamic> json) {
     
-      try {
+    try {
 
-      final response = json.toString();
-      final usuario  = loginResponseFromJson(response).usuario;
-            
-      final authUserState = AuthState(
-      usuario: usuario,
-      authenticando: state.authenticando      
-       );
+    final usuario = Usuario.fromJson(json);
+    return AuthState(usuario: usuario, authenticando: false);
 
-      final data = authUserState.usuario!.id;
-      
-      // ignore: avoid_print
-      print("USER UID: $data");      
-      
-      return authUserState;  
-
-      
-    } catch (e) {
-      return null;
-    }
+  } catch (e) {
+    
+    return null;
+  }
   }
   
   @override
   Map<String, dynamic>? toJson(AuthState state) {
        
       if(state.usuario != null){
-      final data = state.usuario!.toJson();      
-     
-      return data;
+      return state.usuario!.toJson();           
+      
      }else{
       return null;
      }     
   }
 
-  Future<bool> initRegister(String nombre, String email, String password,
-    String apellido, String nacimiento, String domicilio,
-    String vehiculo, String modelo, String patente, String licencia ) async {
+  void _sendUser(RegisterUserEvent event, Emitter<AuthState> emit) {
+    _initRegister();
+  } 
 
-    
-    final usuario = await authService.register(nombre, email, password,
-    apellido, nacimiento, domicilio, vehiculo, modelo, patente, licencia );   
+  Future<bool> _initRegister( ) async {
 
-      
+    final userData = registerUserController.agregarNuevoUsuario();
+    final usuario = await authService.register(userData);  
+   
     
      if(usuario.id.isNotEmpty){
-
+   
     add(OnAddUserSessionEvent(usuario));
+    registerUserController.limpiarAllControllers();
   
 
       return true;
      }else{
 
-      
       return false;
      }    
 

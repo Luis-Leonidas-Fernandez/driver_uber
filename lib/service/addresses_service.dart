@@ -21,6 +21,7 @@ class AddressService {
   final funtions = Functions.instance;
 
   Future getAddressesBackground() async {
+    
     final token = await storage.getTokenUser();
     final idUser = await storage.getId();
 
@@ -97,12 +98,12 @@ class AddressService {
       
       //data decoded
       final dataMap = jsonDecode(resp.body)["orderUser"];      
-     
-      
+         
       //convert data a Address Model
       final Map<String, dynamic> response = dataMap ?? newMap;   
-      final res = Address.fromJson(response);   
-      
+      final res = Address.fromJson(response);
+
+           
       await storage.deleteIdOrder();
       await storage.saveIdOrder(res.id);
       
@@ -225,6 +226,38 @@ class AddressService {
       return '';
     }
   }
+
+  Future<bool> updateHoraEsperaFin(String idOrder, DateTime horaFin) async {
+
+  try {
+
+  final token = await StorageService.instance.getTokenUser();
+  final headers = {'Content-Type': 'application/json','x-token': token!};
+  final body =  jsonEncode({"horaEsperaFin": horaFin.toIso8601String()}); 
+  
+
+  final resp = await http.put(
+  Uri.parse('${Environment.apiUrl}/drivers/hora-espera-fin/$idOrder'),
+  headers: headers, body: body);    
+    
+
+  if (resp.statusCode == 200 || resp.statusCode == 201) {
+      final data = jsonDecode(resp.body);
+      return data['ok'] == true;
+    } else {
+      print('❌ Error en respuesta del servidor: ${resp.statusCode}');
+      return false;
+    }
+    
+  } catch (e) {
+    print('🛑 Excepción al enviar horaEsperaFin: $e');
+    return false;
+  }  
+
+  
+
+}
+
   Future<dynamic> arrivedDriver() async {
 
     final token = await StorageService.instance.getTokenUser();
@@ -237,7 +270,7 @@ class AddressService {
       'x-token': token.toString()
     };
 
-
+    
     final Map<String, String> data = {'_id': idUser!, 'status': 'llego-conductor'};
    
     

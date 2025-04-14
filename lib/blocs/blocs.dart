@@ -4,3 +4,6 @@ export 'package:inri_driver/blocs/address/address_bloc.dart';
 export 'package:inri_driver/blocs/map/map_bloc.dart';
 export 'package:inri_driver/blocs/notification/notification_bloc.dart';
 export 'package:inri_driver/blocs/user/auth_bloc.dart';
+export 'package:inri_driver/blocs/cronometro/cronometro_bloc.dart';
+export 'package:inri_driver/blocs/tarifa/tarifario_bloc.dart';
+export 'package:inri_driver/blocs/precioDistancia/precio_distancia_bloc.dart';

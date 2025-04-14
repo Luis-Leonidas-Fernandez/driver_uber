@@ -115,25 +115,36 @@ class MapBloc extends Bloc<MapEvent, MapState> {
 
 
     LatLng bounds(List<double> location) {
-    
+      
+    final LatLng driverPosition = locationBloc.state.lastKnownLocation ?? const LatLng(-27.452786, -58.985812);
+
+    if( location.isEmpty) {
+     final driverCenter  = LatLng(driverPosition.latitude - 0.015, driverPosition.longitude + 0.017);
+    return driverCenter;
+    }
 
     final user = List.from(location);
-    final LatLng driverPosition = locationBloc.state.lastKnownLocation!;
-    final myPosition = LatLng(user[0], user[1]);   
+    
+    final userPosition = LatLng(user[0], user[1]); 
+
+    if(location.isEmpty) {
+    final driverCenter  = LatLng(driverPosition.latitude - 0.015, driverPosition.longitude + 0.017);
+    return driverCenter;
+    }  
     
 
-    final double left   = math.min(myPosition.latitude, driverPosition.latitude);
-    final double right  = math.max(myPosition.latitude, driverPosition.latitude);
-    final double top    = math.min(myPosition.longitude, driverPosition.longitude);
-    final double bottom = math.max(myPosition.longitude, driverPosition.longitude);
+    final double left   = math.min(userPosition.latitude, driverPosition.latitude);
+    final double right  = math.max(userPosition.latitude, driverPosition.latitude);
+    final double top    = math.min(userPosition.longitude, driverPosition.longitude);
+    final double bottom = math.max(userPosition.longitude, driverPosition.longitude);
 
     final LatLng southwest = LatLng(left,bottom);
     final LatLng northeast = LatLng(right, top);
     
     
      final LatLng  center = LatLng(
-      (southwest.latitude + northeast.latitude) /2,
-      (southwest.longitude + northeast.longitude) /2, 
+      (southwest.latitude + northeast.latitude) / 2 - 0.025,
+      (southwest.longitude + northeast.longitude) / 2 + 0.025, 
       );    
    
    return center;

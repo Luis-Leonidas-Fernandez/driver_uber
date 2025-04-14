@@ -54,7 +54,7 @@ class StorageService {
   }
 
   // Obteniendo ID del driver
-  Future<void> deleteId() async {      
+   Future<void> deleteId() async {      
      await storage.delete(key: 'id', aOptions: _getAndroidOptions());       
       
   }

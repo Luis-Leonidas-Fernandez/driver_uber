@@ -16,19 +16,41 @@ class AddAddressEvent extends AddressEvent{
 
 
 
-class DeleteAddressEvent extends AddressEvent{
+class OnClearStateEvent extends AddressEvent{
   
-  const DeleteAddressEvent();
+  const OnClearStateEvent();
 
 }
 
 class ExistOrderUserEvent extends AddressEvent{}
+class OnNotExistOrderUserEvent extends AddressEvent{}
 class OnStartLoadingAddress extends AddressEvent{}
 class OnStopLoadingAddress extends AddressEvent{}
 class OnIsAcceptedTravel extends AddressEvent{}
 class OnIsDeclinedTravel extends AddressEvent{}
 class OnLockBtnArriveEvent extends AddressEvent{}
+
+
 //class OnArriveDriverEvent extends AddressEvent{}
+
+
+//conductor en camino
+class OnAcceptedTravel extends AddressEvent{}
+//conductor cancela viaje
+class OnCancelTravel extends AddressEvent{}
+
+
+
+// Conductor hace tap en cronometro parando el tiempo y mostrando la tarifa final
+class OnGuardarHoraEsperaFin extends AddressEvent {
+  final DateTime horaEsperaFin;
+
+  const OnGuardarHoraEsperaFin(this.horaEsperaFin);
+
+  @override
+  List<Object?> get props => [horaEsperaFin];
+}
+
 
 
 

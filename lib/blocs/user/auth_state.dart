@@ -28,3 +28,16 @@ class UserSessionInitialState extends AuthState {
   const UserSessionInitialState(): super( authenticando: false, usuario: null);
 }
 
+/// ✅ Estado cuando se está esta creando un usuario para registrarlo en DB
+class UserLoadState extends AuthState {}
+
+
+
+
+
+  
+
+  
+
+  
+

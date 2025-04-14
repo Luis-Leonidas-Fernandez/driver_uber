@@ -24,3 +24,15 @@ class OnClearUserSessionEvent extends AuthEvent{
  const  OnClearUserSessionEvent();
 }
 
+/// ✅ Agregar una nuevo usuario
+class RegisterUserEvent extends AuthEvent {}
+
+// Usuario actualizado
+class OnUpdateUserEvent extends AuthEvent {
+  final Usuario usuarioActualizado;
+
+  const OnUpdateUserEvent(this.usuarioActualizado);
+
+  @override
+  List<Object> get props => [usuarioActualizado];
+}

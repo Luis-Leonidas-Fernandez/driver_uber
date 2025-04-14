@@ -35,7 +35,22 @@ if (keystorePropertiesFile.exists()) {
 android {
 
     compileSdkVersion 34 
+    namespace 'com.luisleonidasfernandez.flutterinridriver' 
     //flutter.compileSdkVersion
+    
+    //compileOptions y kotlinOptions fue agregado para que java no se queje
+    
+    compileOptions {        
+    sourceCompatibility JavaVersion.VERSION_17
+    targetCompatibility JavaVersion.VERSION_17
+    // add this code
+    coreLibraryDesugaringEnabled true
+
+    }
+
+    kotlinOptions {
+        jvmTarget = "17"
+    }
 
      
 
@@ -86,3 +101,6 @@ flutter {
 }
 
 
+dependencies {
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.3'
+}
