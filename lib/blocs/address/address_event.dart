@@ -38,6 +38,8 @@ class OnLockBtnArriveEvent extends AddressEvent{}
 class OnAcceptedTravel extends AddressEvent{}
 //conductor cancela viaje
 class OnCancelTravel extends AddressEvent{}
+// conductor finaliza viaje
+class FinishOrderEvent extends AddressEvent {}
 
 
 

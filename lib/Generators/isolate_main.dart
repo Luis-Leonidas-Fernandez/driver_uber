@@ -1,9 +1,8 @@
-// ignore_for_file: avoid_print
+
 
 import 'dart:async';
 import 'dart:isolate';
-//import 'package:flutter/services.dart';
-//import 'package:geolocator/geolocator.dart';
+
 
 class IsolateMain {
 
@@ -19,7 +18,7 @@ class IsolateMain {
     static void isolatePosition( SendPort sendPort) async {   
   
       Timer.periodic(const Duration(seconds: 1), (_) {
-      print("after timer");  
+ 
       sendPort.send(DateTime.now().toString());
 
      });
@@ -33,15 +32,15 @@ class IsolateMain {
 
          _isolate?.kill();
          _isolate = await Isolate.spawn<SendPort>(isolatePosition,receivePort.sendPort);
-         print("***$_isolate****resultado de Isolate.spawn Position****");
+     
 
-    } on IsolateSpawnException catch (e) {
-      print(e);
+    } on IsolateSpawnException {
+      // Intentionally ignored
     }      
    
                             
         subscriptionIsolate = receivePort.listen((message) { 
-        print('****Isolate Listen Subscription: $message');
+        
    });
 
 
@@ -52,7 +51,7 @@ class IsolateMain {
   void finishIsolate(){
     subscriptionIsolate.cancel();
     _isolate?.kill();
-    print("KILLED ISOLATE");
+
 
   }
 
@@ -62,14 +61,4 @@ class IsolateMain {
 
 }
 
- /* final driverPosition = await Geolocator.getCurrentPosition(
-   desiredAccuracy: LocationAccuracy.high);  
-  
-   final location = {'lat': driverPosition.latitude, 'long': driverPosition.longitude};
-   
-   print('***driverPosition: $location*******');
-   Future.delayed(const Duration(seconds: 2)); 
-   final data = location;
-    //sendOk
-  
-  sendPort.send(data); */
+ 

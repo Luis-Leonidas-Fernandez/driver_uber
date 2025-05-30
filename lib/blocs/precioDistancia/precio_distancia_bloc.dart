@@ -17,6 +17,7 @@ class PrecioDistanciaBloc extends Bloc<PrecioDistanciaEvent, PrecioDistanciaStat
     on<ResetearPrecioDistanciaEvent>(_onReset);
 
     on<IniciarCalculoPrecioEvent>((event, emit) {
+   
     emit(state.copyWith(calculando: true));  
       
     });
@@ -30,7 +31,8 @@ class PrecioDistanciaBloc extends Bloc<PrecioDistanciaEvent, PrecioDistanciaStat
 
   void _onActualizarUbicacion(ActualizarUbicacionEvent event, Emitter<PrecioDistanciaState> emit) {   
 
-    if (!state.calculando) {   
+    if (!state.calculando) {  
+     
     return;
     }
 

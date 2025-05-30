@@ -22,41 +22,38 @@ class BookingCard extends StatefulWidget {
 }
 
 class _BookingCardState extends State<BookingCard> {
-
-  //final MessageService messageService = MessageService();
-
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
-    final isSmallScreen = screenHeight <= 780;
+    //final screenWidth = MediaQuery.of(context).size.width;
+    //final screenHeight = MediaQuery.of(context).size.height;
+    //final isSmallScreen = screenHeight <= 780;
 
-    final sectionSpacing = isSmallScreen ? 6.0 : 10.0;
-    final horizontalPadding = screenWidth < 375 ? 15.0 : 20.0;
+    //final sectionSpacing = isSmallScreen ? 6.0 : 10.0;
+    //final horizontalPadding = screenWidth < 375 ? 15.0 : 20.0;
 
     final locationBloc = BlocProvider.of<LocationBloc>(context);
 
     return DraggableCard(
-      startTopFactor: 0.53,
+      startTopFactor: 0.47,
       dragPercent: 0.35,
-      child: Container(
-        constraints: const BoxConstraints(maxHeight: 550),
-        decoration: _decorationContainerBookingCard(),
-        child: BlocListener<LocationBloc, LocationState>(
-          listenWhen: (previous, current) =>
-          previous.lastKnownLocation != current.lastKnownLocation,
-          listener: (context, state) {
-             final ubicacion = state.lastKnownLocation;
-            if (ubicacion != null) {
-              context.read<PrecioDistanciaBloc>().add(
-              ActualizarUbicacionEvent(ubicacion: ubicacion),
-            );
-           }
-          },
+      child: LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) { 
+
+          final screenWidth =  constraints.maxWidth;
+          final screenHeight = constraints.maxHeight;
+
+          final isSmallScreen = screenHeight <= 780;
+
+          final sectionSpacing = isSmallScreen ? 6.0 : 10.0;
+          final horizontalPadding = screenWidth < 375 ? 15.0 : 20.0;
+
+
+          return Container(
+          constraints: const BoxConstraints(maxHeight: 550),
+          decoration: _decorationContainerBookingCard(),
           child: Stack(
             clipBehavior: Clip.none,
             children: [
-              // Fondo degradado inferior
               Positioned(
                 top: 290,
                 left: 0,
@@ -75,7 +72,6 @@ class _BookingCardState extends State<BookingCard> {
                   ),
                 ),
               ),
-
               const Positioned(
                 top: -60,
                 left: 0,
@@ -88,9 +84,6 @@ class _BookingCardState extends State<BookingCard> {
                   ),
                 ),
               ),
-
-              // Mostrar boton para cancelar viaje
-
               Positioned(
                 top: 8,
                 right: 8,
@@ -98,9 +91,9 @@ class _BookingCardState extends State<BookingCard> {
                   builder: (context, state) {
                     final shouldShowCancel =
                         state.address?.id != null && state.isAccepted == false;
-
+        
                     if (!shouldShowCancel) return const SizedBox.shrink();
-
+        
                     return CancelTripIcon(
                       onCancel: (motivo) {
                         context.read<AddressBloc>().add(OnCancelTravel());
@@ -110,15 +103,13 @@ class _BookingCardState extends State<BookingCard> {
                   },
                 ),
               ),
-
-              // Título y cupón
               Positioned(
                 top: 50,
                 left: 20,
                 child: BlocBuilder<AddressBloc, AddressState>(
                   builder: (context, state) {
                     final cuponValue = state.address?.cupon ?? '0';
-
+        
                     return Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -167,129 +158,159 @@ class _BookingCardState extends State<BookingCard> {
                   listenWhen: (prev, curr) =>
                       prev.address?.horaEsperaInicio !=
                           curr.address?.horaEsperaInicio ||
-                      prev.address?.horaEsperaFin !=
-                          curr.address?.horaEsperaFin,
+                      prev.address?.order != curr.address?.order,
                   listener: (context, state) {
                     final horaInicio = state.address?.horaEsperaInicio;
-                    final horaFin = state.address?.horaEsperaFin;
+                    final order = state.address?.order ?? '';
                     final cronometroBloc = context.read<CronometroBloc>();
-
-                    if (horaInicio != null &&
+        
+                    if (order == 'llego-conductor' &&
+                        horaInicio != null &&
                         cronometroBloc.state.horaEsperaInicio == null) {
                       cronometroBloc
                           .add(StartCronometroEvent(horaInicio: horaInicio));
                     }
-
-                    if (horaFin != null) {
+        
+                    if (state.address?.horaEsperaFin != null) {
                       cronometroBloc.add(const StopCronometroEvent());
                     }
                   },
                   child: const CronometroWidget(),
                 ),
               ),
-
-              // Contenido dinámico
               Positioned(
-                top: sectionSpacing * 12.5,
+                top: sectionSpacing * 12.0,
                 left: horizontalPadding,
                 right: horizontalPadding,
-                child: BlocBuilder<AddressBloc, AddressState>(
-                  builder: (context, stateAddress) {
-                    final order = stateAddress.address;
-                    final idOrder = order?.id;
-                    final idDriver = order?.idDriver;
-
-                    // 🟢 Mostrar PresentationContainer SOLO si no hay orden
-                    final isOrderMissing =
-                        order == null || idOrder == null || idOrder.isEmpty;
-
-                    if (isOrderMissing) {
-                      return const PresentationContainer();
-                    }
-
-                    // ✅ Mostrar datos del cliente
-                    final isDriverAssigned =
-                        idDriver != null && idDriver.isNotEmpty;
-
-                    if (isDriverAssigned) {
-                      return const ContainerDetail();
-                    }
-
-                    return const SizedBox.shrink();
-                  },
+                bottom: 20,
+                child: SizedBox(
+                  height: screenHeight * 0.5,
+                  child: ListView(
+                    padding: EdgeInsets.zero,
+                    children: [
+                      const SizedBox(height: 10),
+                      BlocBuilder<AddressBloc, AddressState>(
+                        builder: (context, stateAddress) {
+                          final order = stateAddress.address;
+                          final idOrder = order?.id;
+                          final estado = order?.order ?? '';
+                          final isOrderMissing =
+                              order == null || idOrder == null || idOrder.isEmpty;
+        
+                          if (isOrderMissing) {
+                            return const PresentationContainer();
+                          }
+        
+                          final isOrderValid = estado == 'libre' ||
+                              estado == 'en-camino' ||
+                              estado == 'llego-conductor';
+        
+                          if (idOrder.isNotEmpty && isOrderValid) {
+                            return const ContainerDetail();
+                          }
+        
+                          return const SizedBox.shrink();
+                        },
+                      ),
+                      const SizedBox(height: 18),
+        
+                      // Botón dinámico original agregado al final del ListView
+                      _buttonsPedirFinalizar(
+                          screenHeight, isSmallScreen, locationBloc),
+                    ],
+                  ),
                 ),
               ),
-
-              // Botón dinámico
-              _buttonsPedirFinalizar(screenHeight, isSmallScreen, locationBloc),
             ],
           ),
-        ),
+        );
+         },
+        
       ),
     );
   }
 
-  Positioned _buttonsPedirFinalizar(
+  Widget _buttonsPedirFinalizar(
       double screenHeight, bool isSmallScreen, LocationBloc locationBloc) {
-    return Positioned(
-      top: screenHeight * (isSmallScreen ? 0.365 : 0.375),
-      left: 20,
-      right: 20,
-      child: BlocBuilder<AddressBloc, AddressState>(
-        builder: (context, stateAddress) {
-          // Botón "Aceptar Viaje"
-          if (stateAddress.address?.id != null &&
-              stateAddress.isAccepted == false) {
-            return ButtonReusable(
+    return BlocBuilder<AddressBloc, AddressState>(
+      builder: (context, stateAddress) {
+        final locationBloc = BlocProvider.of<LocationBloc>(context);
+
+        const horizontalMargin = 0.0;
+
+        if (stateAddress.address?.id != null &&
+            stateAddress.isAccepted == false) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: horizontalMargin),
+            child: ButtonReusable(
               text: 'Aceptar viaje',
               onPressed: () async {
                 final myLocation = locationBloc.state.lastKnownLocation;
                 if (myLocation == null) return;
-                // ✅ Confirmar viaje
                 context.read<AddressBloc>().add(OnAcceptedTravel());
                 context.read<AddressBloc>().add(OnIsAcceptedTravel());
-                // ✅ Resetear distancia y precio ANTES de comenzar el nuevo viaje
-                context.read<PrecioDistanciaBloc>().add(const ResetearPrecioDistanciaEvent());
-                context.read<CronometroBloc>().add(const ResetCronometroEvent());
-
-                //messageService.initPeriodicMessage();
-               
+                context
+                    .read<PrecioDistanciaBloc>()
+                    .add(const ResetearPrecioDistanciaEvent());
+                context
+                    .read<CronometroBloc>()
+                    .add(const ResetCronometroEvent());
               },
-            );
-          }
+            ),
+          );
+        }
 
-          // Botón "Finalizar"
-          final order = stateAddress.address;
-          final idOrder = order?.id;
-          final hasOrder = idOrder != null && idOrder.isNotEmpty;
+        final order = stateAddress.address;
+        final idOrder = order?.id;
+        final hasOrder = idOrder != null && idOrder.isNotEmpty;
 
-          if (hasOrder && stateAddress.isAccepted == true) {
-            return ButtonReusable(
+        if (hasOrder && stateAddress.isAccepted == true) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: horizontalMargin),
+            child: ButtonReusable(
               text: 'Finalizar viaje',
               onPressed: () async {
+                final confirmed = await showDialog<bool>(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text('¿Finalizar viaje?'),
+                    content: const Text(
+                        '¿Estás seguro de que deseas finalizar el viaje? Esta acción no se puede deshacer.'),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(false),
+                        child: const Text('Cancelar'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () => Navigator.of(context).pop(true),
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red),
+                        child: const Text('Finalizar',
+                        style: TextStyle(color: Colors.white),),
+                      ),
+                    ],
+                  ),
+                );
 
-                // 🧼 1. Detener emisión de ubicación
-              locationBloc.stopPeriodicTask();
+                if (confirmed != true) return;
+                if (!context.mounted) return;
 
-               // 🧼 2. Resetear cronómetro
-              context.read<CronometroBloc>().add(const ResetCronometroEvent());
-
-               // 🧼 3. Resetear precio por distancia
-              context.read<PrecioDistanciaBloc>().add(const ResetearPrecioDistanciaEvent());
-
-               // 🧼 4. Cancelar viaje (cambia estado, limpia orden)
-              context.read<AddressBloc>().add(OnCancelTravel());
-
-               // 🧼 5. Limpiar almacenamiento persistente
-              HydratedBloc.storage.write('AddressBloc', null);
-              
+                locationBloc.stopPeriodicTask();
+                context.read<AddressBloc>().add(FinishOrderEvent());
+                context
+                    .read<CronometroBloc>()
+                    .add(const ResetCronometroEvent());
+                context
+                    .read<PrecioDistanciaBloc>()
+                    .add(const ResetearPrecioDistanciaEvent());
+                HydratedBloc.storage.write('AddressBloc', null);
               },
-            );
-          }
+            ),
+          );
+        }
 
-          return const SizedBox.shrink();
-        },
-      ),
+        return const SizedBox.shrink();
+      },
     );
   }
 

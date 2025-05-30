@@ -14,7 +14,7 @@ class GpsAccessPage extends StatelessWidget {
           builder: (context, state) { 
 
            final gpsEnabled = state.gpsModel?.isGpsEnabled?? false;
-           print('gpsacces page gps enable: $gpsEnabled');
+       
 
            return gpsEnabled == false
            ? const _EnableGpsMessage()

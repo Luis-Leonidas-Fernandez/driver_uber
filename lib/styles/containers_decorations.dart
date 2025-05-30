@@ -7,7 +7,7 @@ class ContainerStyles {
     return BoxDecoration(
       border: Border.all(
         color: const Color.fromARGB(255, 251, 250, 252).withValues(),
-        width: 1.4,
+        width: 1.5,
       ),
       color: const Color.fromARGB(255, 2, 2, 2),
       borderRadius: BorderRadius.circular(10),

@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+//import 'package:inri_driver/global/environment.dart';
 import 'package:inri_driver/models/base.dart';
 import 'package:inri_driver/models/bases_conductor.dart';
 import 'package:inri_driver/service/base_service.dart';
@@ -32,10 +33,10 @@ class BaseBloc extends Bloc<BaseEvent, BaseState> {
   
     add(AddBaseEvent(obj));
 
-    final base = state.baseSelected;
-    final result = base.toString();
-    // ignore: avoid_print
-    print("STATE base bloc: $result");
+    //final base = state.baseSelected;
+    //final result = base.toString();
+
+  
 
   }
 
@@ -43,11 +44,16 @@ class BaseBloc extends Bloc<BaseEvent, BaseState> {
     add(SetBasesDisponiblesEvent(bases));
   }
 
-  void getAllBasesAndSaveInBloc(BaseBloc baseBloc) async {
+ Future<void> getAllBasesAndSaveInBloc() async {
+
   try {
+
+   
     final baseService = BaseService();
     final bases = await baseService.getBases();
-    baseBloc.setBasesDisponibles(bases);
+ 
+    setBasesDisponibles(bases);
+    
 
   } catch (e) {
    return;

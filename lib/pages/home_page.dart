@@ -1,9 +1,9 @@
-// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inri_driver/blocs/blocs.dart';
 import 'package:inri_driver/constants/app_bar.dart';
-import 'package:inri_driver/models/address.dart';
+
 import 'package:inri_driver/models/usuario.dart';
 import 'package:inri_driver/views/views.dart';
 import 'package:inri_driver/widgets/buttons/btn_arrived.dart';
@@ -20,7 +20,7 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with WidgetsBindingObserver{
   AddressBloc? addressBloc;
   LocationBloc? locationBloc;
   AuthBloc? usuarioBloc;
@@ -29,7 +29,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-
+     WidgetsBinding.instance.addObserver(this);
     final locationBloc = BlocProvider.of<LocationBloc>(context);
     locationBloc.startFollowingUser();
 
@@ -41,115 +41,150 @@ class _HomePageState extends State<HomePage> {
     final mapBloc = BlocProvider.of<MapBloc>(context);
     mapBloc.initBackgroundService();
 
+    addressBloc.startPollingOrder();
+
     BlocProvider.of<LocationBloc>(context);
     BlocProvider.of<AuthBloc>(context);
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     locationBloc?.stopFollowingUser();
     locationBloc?.stopPeriodicTask();
     addressBloc?.stopLoadingAddress();
     usuarioBloc?.deleteUser();
+    addressBloc?.stopPollingOrder();
     super.dispose();
   }
+
+   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    final locationBloc = context.read<LocationBloc>();
+
+    if (state == AppLifecycleState.paused) {
+     
+      locationBloc.stopFollowingUser();
+      locationBloc.stopPeriodicTask(); // deberías implementarla si aún no existe
+    } else if (state == AppLifecycleState.resumed) {
+     
+      locationBloc.startFollowingUser();
+      locationBloc.sendPeriodicPosition(); // solo si hay una orden activa
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
     final usuarioBloc = BlocProvider.of<AuthBloc>(context);
     final addressBloc = BlocProvider.of<AddressBloc>(context);
+    final nombre =  usuarioBloc.state.usuario?.nombre ?? '';
 
-    addressBloc.state.loading;
-
-    return BlocBuilder<LocationBloc, LocationState>(
-      builder: (context, state) {
-        final hasLocation = state.lastKnownLocation != null;
-        return Scaffold(
-          extendBodyBehindAppBar: true,
-          appBar: hasLocation ? AppBarConstants.customAppBar(context) : null,
-          body: BlocBuilder<LocationBloc, LocationState>(
-            builder: (context, state) {
-              if (state.lastKnownLocation == null) return const ShimmerLoadingHome();
-              final long = (state.lastKnownLocation!.longitude);
-              final lat = state.lastKnownLocation!.latitude;
-
-              return StreamBuilder(
-                  stream: addressBloc.getOrder(),
-                  builder: (context, AsyncSnapshot<Address> snapshot) {
-                    return SingleChildScrollView(
-                      child: Stack(
-                        children: [
+    return BlocListener<LocationBloc, LocationState>(
+      listenWhen: (previous, current) =>
+          previous.lastKnownLocation != current.lastKnownLocation,
+      listener: (context, state) {
+        final ubicacion = state.lastKnownLocation;
+        final isCalculando =
+            context.read<PrecioDistanciaBloc>().state.calculando;
 
 
-                          usuarioBloc.state.usuario != null
-                              ? MapView(initialLocation: LatLng(lat, long))
-                              : Container(),
 
-
-                          BlocListener<AddressBloc, AddressState>(
-                            listenWhen: (previous, current) =>
-                                previous.address?.id != current.address?.id || // nueva orden
-                                previous.isAccepted != current.isAccepted  ||
-                                previous.address?.order != current.address?.order,
-                            listener: (context, state) {
-
-                              final order = state.address;
-                              print('🧪 Estado actual del order: ${order?.order}');
-
-                              final locationBloc = context.read<LocationBloc>();
-                              final cronometroBloc = context.read<CronometroBloc>();
-                              //final precioDistanciaBloc = context.read<PrecioDistanciaBloc>();
-
-                              if (order?.order == 'llego-conductor') {
-                              print('✅ [Listener] Detectado order = llego-conductor'); 
-                              context.read<PrecioDistanciaBloc>().add(const IniciarCalculoPrecioEvent());
-                              print('🚀 Evento IniciarCalculoPrecioEvent enviado');
-                              } else {
-                              print('⛔ [Listener] Order distinto de "llego-conductor", se detiene cálculo'); 
-                              context.read<PrecioDistanciaBloc>().add(const DetenerCalculoPrecioEvent());
-
-                              }
-
-                              final lastLocation = context.read<LocationBloc>().state.lastKnownLocation;
-                               print('📍 [Listener] Última ubicación del conductor: $lastLocation');
-                              if (lastLocation != null) {
-                              print('📍 [BlocListener] Forzando ubicación inicial: $lastLocation');
-                              context.read<PrecioDistanciaBloc>().add(
-                              ActualizarUbicacionEvent(ubicacion: lastLocation),
-                              );
-                              }
-
-                              if (state.address == null) {
-                                print( '🧹 Reiniciando Cronómetro porque no hay viaje activo');
-                                cronometroBloc.add(const ResetCronometroEvent());
-                              }
-
-                              final hasOrder = order?.id != null && order?.idDriver != null;
-                              final isAccepted = state.isAccepted;
-
-                              print('📦 [Listener] hasOrder: $hasOrder | isAccepted: $isAccepted');
-
-                              if (hasOrder && state.isAccepted) {
-                                print( '🛰️ [Acción] Iniciando envío periódico...');
-                                locationBloc.sendPeriodicPosition();
-                              } else {
-                                print( '⛔ [Acción] Deteniendo envío periódico...');
-                                locationBloc.stopPeriodicTask();
-                              }
-                            },
-                            child: const BookingCard(),
-                          ),
-                          addressBloc.state.isPressed == true
-                              ? const BtnArrived()
-                              : Container()
-                        ],
-                      ),
-                    );
-                  });
-            },
-          ),
-        );
+        if (ubicacion != null && isCalculando) {
+          context.read<PrecioDistanciaBloc>().add(
+                ActualizarUbicacionEvent(ubicacion: ubicacion),
+              );
+          
+        }
       },
+      child: BlocBuilder<LocationBloc, LocationState>(
+        builder: (context, state) {
+          final hasLocation = state.lastKnownLocation != null;
+          return Scaffold(
+            extendBodyBehindAppBar: true,
+            appBar: hasLocation ? AppBarConstants.customAppBar(context, nombre) : null,
+            body: Builder(
+              builder: (context) {
+                if (state.lastKnownLocation == null) return const ShimmerLoadingHome();
+                final long = state.lastKnownLocation!.longitude;
+                final lat = state.lastKnownLocation!.latitude;
+
+                return SingleChildScrollView(
+                  child: Stack(
+                    children: [
+                      usuarioBloc.state.usuario != null
+                          ? MapView(initialLocation: LatLng(lat, long))
+                          : Container(),
+
+                      // BlocListener para cambios de AddressBloc (aceptar viaje, empezar, etc)
+                      BlocListener<AddressBloc, AddressState>(
+                        listenWhen: (previous, current) =>
+                            previous.address?.id != current.address?.id ||
+                            previous.isAccepted != current.isAccepted ||
+                            previous.address?.order != current.address?.order,
+                        listener: (context, state) {
+                          final order = state.address;
+
+
+                          final locationBloc = context.read<LocationBloc>();
+                          final cronometroBloc = context.read<CronometroBloc>();
+
+                          if (order?.order == 'llego-conductor') {
+                          
+                            context
+                                .read<PrecioDistanciaBloc>()
+                                .add(const IniciarCalculoPrecioEvent());
+
+                            final ubicacion =
+                                locationBloc.state.lastKnownLocation;
+                            if (ubicacion != null) {
+                              context.read<PrecioDistanciaBloc>().add(
+                                    ActualizarUbicacionEvent(
+                                        ubicacion: ubicacion),
+                                  );
+                            }
+                          } else {
+                         
+                            context
+                                .read<PrecioDistanciaBloc>()
+                                .add(const DetenerCalculoPrecioEvent());
+                          }
+
+                          if (state.address == null) {
+                            cronometroBloc.add(const ResetCronometroEvent());
+                          }
+
+                          final hasValidOrder = order != null &&
+                              order.id != null &&
+                              order.id!.isNotEmpty;
+                          final isAccepted = state.isAccepted;
+                          final viajeFinalizado = order?.finalizado == true;
+                          final hasDriverAssigned = order?.idDriver != null &&
+                              order!.idDriver!.isNotEmpty;
+
+                          // ✅ Controlar timer PERIÓDICO
+                          if (hasValidOrder && hasDriverAssigned && isAccepted && !viajeFinalizado) {
+                        
+                            locationBloc.sendPeriodicPosition();
+                          } else {
+                       
+                            locationBloc.stopPeriodicTask();
+                          }
+                        },
+                        child: const BookingCard(),
+                      ),
+
+                      addressBloc.state.isPressed == true
+                          ? const BtnArrived()
+                          : Container()
+                    ],
+                  ),
+                );
+              },
+            ),
+          );
+        },
+      ),
     );
   }
 }

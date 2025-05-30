@@ -10,16 +10,8 @@ class AnimatePage extends PageRouteBuilder {
           maintainState: false,
           pageBuilder: (context, animation, secondaryAnimation) => child,
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            final offsetAnimation = Tween<Offset>(
-              begin: const Offset(-1.0, 0.0),
-              end: Offset.zero,
-            ).animate(CurvedAnimation(
-              parent: animation,
-              curve: Curves.easeOut,
-            ));
-
-            return SlideTransition(
-              position: offsetAnimation,
+            return FadeTransition(
+              opacity: animation,
               child: child,
             );
           },

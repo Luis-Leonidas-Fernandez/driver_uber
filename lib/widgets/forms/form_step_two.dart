@@ -214,10 +214,12 @@ class _FormStepTwoState extends State<FormStepTwo> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
           child: Container(
-            constraints: const BoxConstraints(maxWidth: 30, minHeight: 33),
+            height: 36,
+            width: 38,
+            //constraints: const BoxConstraints(maxWidth: 30, minHeight: 33),
             decoration: ContainerStyles.containerIconDecoration(),
             child: Icon(config.icon, color: Colors.white,
-            size: screenHeight <= 380 ? 18 : 25),
+            size: screenHeight <= 380 ? 18 : 30),
           ),
         ),
         Expanded(

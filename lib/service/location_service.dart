@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print
+
 
 import 'dart:async';
 
@@ -53,7 +53,7 @@ class LocationService {
         userPosition.add(location);
         // Position LatLng
         myPosition.add(res);
-        print("******//////$myPosition//////******");
+   
         return true;
       }else{
         return false;
@@ -104,8 +104,7 @@ class LocationService {
 
     Future.delayed(const Duration(seconds: 6));
 
-    
-    print('****ID ORDER: $idOrder FROM LOCATION SERVICE****');
+  
 
     if (idOrder == null) {
       return;

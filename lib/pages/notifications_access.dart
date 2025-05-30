@@ -16,7 +16,7 @@ class NotificationsAccessPage extends StatelessWidget {
 
             final notificationEnabled = state.notificationModel?.isNotificationPermissionGranted?? false;            
 
-           print('notificacion habilitada : $notificationEnabled');
+    
            return notificationEnabled == true
            ? const BuildCreateBasePage()
            : const _AccessNotificationButton(); 

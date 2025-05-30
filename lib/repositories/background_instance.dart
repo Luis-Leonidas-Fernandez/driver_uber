@@ -5,12 +5,10 @@ class BackgroundInstance extends BackgroundLocationRepository{
 
  @override
   Future<void> startForegroundService()async {
-    // ignore: avoid_print
-    print('start');
+    return;
   }
   @override
   Future<void> stopForegroundService()async {
-    // ignore: avoid_print
-    print('stop');
+   return;
   }
 }

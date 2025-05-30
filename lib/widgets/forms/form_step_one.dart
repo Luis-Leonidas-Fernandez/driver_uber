@@ -204,7 +204,7 @@ class _FormStepOneState extends State<FormStepOne> {
       paddingHorizontal: 6.8,
       isFullWidth: isFullWidth,   // Aquí le indicas si es full-width
     ),
-    height: screenHeight <= 640 ? 50 : 55,
+    height: screenHeight <= 640 ? 55 : 50,
     decoration: ContainerStyles.containerDecoration(),
     child: _buildContentRow(config, screenHeight),
   );
@@ -217,10 +217,12 @@ class _FormStepOneState extends State<FormStepOne> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
           child: Container(
-            constraints: const BoxConstraints(maxWidth: 30, minHeight: 33),
+            height: 36,
+            width: 38,
+            //constraints: const BoxConstraints(maxWidth: 38, minHeight: 36),
             decoration: ContainerStyles.containerIconDecoration(),
             child: Icon(config.icon, color: Colors.white,
-            size: screenHeight <= 380 ? 18 : 25),
+            size: screenHeight <= 380 ? 18 : 30),
           ),
         ),
         Expanded(

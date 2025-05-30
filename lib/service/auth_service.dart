@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, avoid_print
+
 
 import 'dart:convert';
 import 'dart:async';
@@ -32,10 +32,8 @@ set autenticando( bool valor ) {
   
 
     //Registro de Usuario
-    Future<Usuario> register( Map<String, dynamic> userData ) async {
-   
-   
-
+    Future<dynamic> register( Map<String, dynamic> userData ) async {
+     
     final body = jsonEncode(userData);
     final headers = {'Content-Type': 'application/json'};
 
@@ -50,27 +48,17 @@ set autenticando( bool valor ) {
     await storage.saveToken(loginResponse.token);
     await storage.saveId(usuario.id);
 
-    return usuario;
+    return loginResponse;
     
     } else {
-      final respBody = Usuario(
-        email: "",
-        nombre: "",
-        apellido: "", 
-        nacimiento: "", 
-        domicilio: "", 
-        vehiculo: "",
-        modelo: "",
-        patente: "",
-        licencia: "",
-        id: "",
-        urlMapbox: "",
-        tokenMapBox: "",
-        idMapBox: "",
-         mapToken: "");
+
+
+      final response =  LoginResponse(
+        ok: false,
+        usuario: null,
+        token: '');
       
-      //jsonDecode(resp.body);
-      return respBody;
+      return response;
     }
 
   }
@@ -111,35 +99,31 @@ set autenticando( bool valor ) {
 
 
     final resp = await http.post(Uri.parse('${ Environment.apiUrl }/logindriver'), body: body, headers: headers  );      
-   
-   
+    
     if ( resp.statusCode == 200 ) {
 
       final loginResponse = loginResponseFromJson( resp.body );
 
       final usuario = loginResponse.usuario as Usuario;      
       
-      final base = usuario.base;
-
-      print("base del conductor: $base");
+      
       final privateToken = loginResponse.token; 
      
       await  storage.saveToken(privateToken);    
       await  storage.saveId(usuario.id);
       await  storage.saveNameDriver(usuario.nombre);
-      
-      return usuario;
+
+         
+      return loginResponse;
     } else {     
-       final respBody = jsonDecode(resp.body);      
-      return respBody['msg'];
-     
+             final response =  LoginResponse(
+             ok: false,
+             usuario: null,
+             token: '');
+
+       return response;
       }
-      
 
     }
-    
-   
-
-    
-  
+      
 }

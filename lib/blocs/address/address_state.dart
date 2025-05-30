@@ -10,6 +10,7 @@ final List<Address> addressHistory;
 final bool isAccepted;
 final bool isPressed;
 final DateTime? horaEsperaFin;
+final String? message;
 
 
 
@@ -19,7 +20,8 @@ const AddressState({
   this.isPressed = false,  
   this.address,
   this.isAccepted = false,
-  this.horaEsperaFin,  
+  this.horaEsperaFin,
+  this.message = '',  
   addressHistory   
 
 }): addressHistory = addressHistory ?? const[];
@@ -32,6 +34,7 @@ AddressState copyWith({
   bool? isPressed, 
   List<Address>? addresshistory,
   DateTime? horaEsperaFin,
+  String? message,
 })
 => AddressState(
   loading: loading?? this.loading,
@@ -41,11 +44,12 @@ AddressState copyWith({
   isPressed: isPressed?? this.isPressed,  
   addressHistory: addresshistory?? addressHistory,
   horaEsperaFin: horaEsperaFin ?? this.horaEsperaFin,
+  message: message?? this.message,
 );
 
   
   @override
-  List<Object?> get props => [loading, existOrder,  isAccepted, isPressed, address, addressHistory, horaEsperaFin,];
+  List<Object?> get props => [loading, existOrder,  isAccepted, isPressed, address, addressHistory, horaEsperaFin, message];
 }
 
 class UserInitialState extends AddressState {

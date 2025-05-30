@@ -1,5 +1,3 @@
-// ignore_for_file: avoid_print
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:inri_driver/animation/animate_page.dart';
@@ -106,8 +104,7 @@ class _FormImputsState extends State<FormImputs> {
   @override
   Widget build(BuildContext context) {
   
-  //ResponsiveUtil responsiveUtil = ResponsiveUtil(context);
-  //double responsiveHeight = responsiveUtil.getResponsiveHeight(0.33);
+
   final heigthScreen = MediaQuery.of(context).size.height;
 
   return SingleChildScrollView(

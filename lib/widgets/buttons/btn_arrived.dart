@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print
+
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,36 +17,48 @@ class BtnArrived extends StatelessWidget {
   Widget build(BuildContext context) {
     late AddressService addressService = AddressService();
     //final locationBloc = BlocProvider.of<LocationBloc>(context);
-    final addressBloc = BlocProvider.of<AddressBloc>(context);  
-    
+    final addressBloc = BlocProvider.of<AddressBloc>(context);
+
     final heigthScreen = MediaQuery.of(context).size.height;
 
     return Positioned(
-            top: heigthScreen * 0.4,
-            left: 340,
-            right: 0,
-            child: BlocBuilder<AddressBloc, AddressState>(
-              builder: (context, state) {
-                return Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: <Widget>[
-                      FloatingActionButton(
-                          backgroundColor: Colors.indigo,
-                          splashColor: Colors.white,
-                          heroTag: UniqueKey(),
-                          child: llego(),
-                          onPressed: () async {
-                            await addressService.arrivedDriver();
-                            //locationBloc.stopPeriodicTask();
+      top: heigthScreen * 0.3,
+      left: 320,
+      right: 0,
+      child: BlocBuilder<AddressBloc, AddressState>(
+        builder: (context, state) {
+          return Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                FloatingActionButton(
+                    backgroundColor: Colors.indigo,
+                    splashColor: Colors.white,
+                    heroTag: UniqueKey(),
+                    child: llego(),
+                    onPressed: () async {
+                      await addressService.arrivedDriver();
 
-                            //OCULTA BOTON LLEGO: TAP = FALSE
-                            addressBloc.add(OnLockBtnArriveEvent());
-                          })
-                    ]);
-              },
-            ),
-          );
-        //: Container();
+                      // Obtener el Address actual
+                      final currentAddress = addressBloc.state.address;
+
+                      if (currentAddress != null) {
+                        // Crear un nuevo Address modificado manualmente con order = "llego-conductor"
+                        final updatedAddress =
+                            currentAddress.copyWith(order: 'llego-conductor');
+
+                        // ACTUALIZAR AddressBloc localmente
+                        addressBloc.add(AddAddressEvent(updatedAddress));
+                      }
+
+                      // OCULTAR BOTÓN LLEGO
+                      addressBloc.add(OnLockBtnArriveEvent());
+
+                })
+              ]);
+        },
+      ),
+    );
+    //: Container();
   }
 }
 

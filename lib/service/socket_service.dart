@@ -1,5 +1,3 @@
-// ignore_for_file: avoid_print
-
 import 'dart:convert';
 
 import 'package:inri_driver/global/environment.dart';
@@ -17,13 +15,21 @@ Socket? socket;
 final storage = StorageService.instance;
 
 // Funcion que inicializara la coneccion del Socket
- void initSocket() async {
+ void initSocket({required String token}) async {
 
-     final resp  = await storage.getTokenUser();
-     
+  // 🛑 Cierre total del socket anterior
+  if (socket != null) {
+   
+    socket!.offAny();
+    socket!.clearListeners();
+    socket!.disconnect();
+    socket = null;
+  }
+
+
+     if (token.isEmpty) { return; }
+    
      await Future.delayed(const Duration(seconds: 2));
-     
-     final token = resp.toString();    
     
 
    socket = io(
@@ -33,6 +39,7 @@ final storage = StorageService.instance;
       .setTimeout(3000)
       .setReconnectionDelay(5000)
       .disableAutoConnect()
+      .enableForceNew()
       .setExtraHeaders({'x-token': token})
       .build()
       
@@ -43,29 +50,29 @@ final storage = StorageService.instance;
 
      socket!.onConnect((_) {    
      
-     socket!.emit('msg', '******conectado*****');     
+     socket!.emit('msg', '******conectado*****'); 
+       
 
     });
 
       //Escuchara eventos del servidor de tipo connect
      socket!.on('connect', (_) {
-      print('connect');
+      
     });
 
     //Escuchara eventos del servidor de tipo connect-error
      socket!.on('connect_error', (data) {      
-       print('connect_error $data');
+      
     });
 
     //Escuchara eventos del servidor de tipo error
      socket!.on('error', (data) {
-     print('error $data');
+    
       
     });
     
     //Escuchara eventos del servidor de tipo disconnect
-     socket!.on('disconnect', (data) {      
-     print('disconnect $data');
+     socket!.on('disconnect', (data) {  
       
     });
 
@@ -114,29 +121,18 @@ final storage = StorageService.instance;
   
   //Funcion encargada de finalizar la coneccion del socket 
   void finishSocket(){
-    
-    socket!.onDisconnect((data) => print('******desconectado*******'));
-    if(socket != null){
-      socket!.disconnect();
-      socket = null;
-    }
    
+    socket?.onDisconnect((data) => data);
+    if (socket != null) {
+    socket!.clearListeners();  
+    socket!.offAny();
+    socket!.disconnect();
+    socket!.destroy();
+    socket!.dispose();
+    socket = null;
    
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+      
+  }
 
 }

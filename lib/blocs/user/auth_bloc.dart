@@ -1,9 +1,11 @@
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:inri_driver/controllers/register_user_controllers.dart';
-//import 'package:inri_driver/models/login.dart';
+import 'package:inri_driver/models/login.dart';
 import 'package:inri_driver/models/usuario.dart';
 import 'package:inri_driver/service/auth_service.dart';
+import 'package:inri_driver/service/socket_service.dart';
+
 
 part 'auth_event.dart';
 part 'auth_state.dart';
@@ -68,15 +70,17 @@ class AuthBloc extends HydratedBloc<AuthEvent, AuthState> {
   Future<bool> _initRegister( ) async {
 
     final userData = registerUserController.agregarNuevoUsuario();
-    final usuario = await authService.register(userData);  
+    final LoginResponse registerResponse = await authService.register(userData);  
    
-    
+    final usuario = registerResponse.usuario as Usuario;
+    final token = registerResponse.token;
      if(usuario.id.isNotEmpty){
    
     add(OnAddUserSessionEvent(usuario));
     registerUserController.limpiarAllControllers();
+    SocketService.instance.initSocket(token: token);
   
-
+     
       return true;
      }else{
 
@@ -88,19 +92,18 @@ class AuthBloc extends HydratedBloc<AuthEvent, AuthState> {
   Future<bool> initLogin(String email, String password) async {
 
     
-    final usuario = await authService.loginUser(email, password);
-
-    final result = usuario.toString();
-
-    // ignore: avoid_print
-    print("INIT LOGIN BLOC: $result");     
-    
-     if(usuario is Usuario){
-
-      add(OnAddUserSessionEvent(usuario));   
+    final login = await authService.loginUser(email, password);
+    final LoginResponse loginResponse = login as LoginResponse;
+    final usuario = loginResponse.usuario as Usuario;
    
+ 
+     if(usuario.id.isNotEmpty){
+
+      add(OnAddUserSessionEvent(usuario));        
+      
       return true;
-     }else{     
+     }else{  
+       
       return false;
      }    
 

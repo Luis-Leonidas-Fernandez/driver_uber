@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print
+
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -47,15 +47,12 @@ class _MapViewState extends State<MapView> {
   Widget build(BuildContext context) {
 
     final usuario = Provider.of<AuthBloc>(context).state.usuario;
-    print('[Usuario :] ${usuario.toString()}');
+
     final locationBloc = BlocProvider.of<LocationBloc>(context);
     final myLocation = locationBloc.state.lastKnownLocation!;
-    final location = addressBloc.state.address?.ubicacion == null
-        ? null
-        : addressBloc.state.address!.ubicacion;
-    final destination = addressBloc.state.address?.destino == null
-        ? null
-        : addressBloc.state.address!.destino;
+   
+    final location = addressBloc.state.address?.ubicacion == null? null: addressBloc.state.address!.ubicacion;
+    final destination = addressBloc.state.address?.destino == null ? null: addressBloc.state.address!.destino;
 
     final mapBloc = BlocProvider.of<MapBloc>(context);
     final userLocation = location ?? [];
@@ -69,13 +66,13 @@ class _MapViewState extends State<MapView> {
 
     final size = MediaQuery.of(context).size;
 
+
     return SizedBox(
       width: size.width,
       height: size.height,
       child: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
-          final user = state.usuario;
-          print('[Obteniendo Usuario desde map of Delivery] ${user.toString()}');
+        
           return FlutterMap(
             mapController: _mapController,
             options: MapOptions(

@@ -26,25 +26,33 @@ class BaseConductor {
   });
 
   factory BaseConductor.fromJson(Map<String, dynamic> json) {
-    try {
-      final coords = json['ubicacion']?['coordinates'];
-      return BaseConductor(
-        id: json['_id'],
-        base: json['base'],
-        adminId: json['adminId'],
-        zonaName: json['zonaName'],
-        idDriver: (json['idDriver'] as List?)?.map((e) => e.toString()).toList(),
-        viajes: json['viajes'],
-        createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
-        updatedAt: json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
-        ubicacion: (coords != null && coords.length == 2)
-            ? LatLng(coords[1], coords[0])
-            : null,
-      );
-    } catch (e) {
-      return BaseConductor(); // Retorna instancia vacía
+  try {
+    final coords = json['ubicacion']?['coordinates'];
+    final latLng = (coords != null && coords.length == 2)
+        ? LatLng(coords[1], coords[0])
+        : null;
+
+    if (latLng == null) {
+    
     }
+
+    return BaseConductor(
+      id: json['_id'],
+      base: json['base'],
+      adminId: json['adminId'],
+      zonaName: json['zonaName'],
+      idDriver: (json['idDriver'] as List?)?.map((e) => e.toString()).toList(),
+      viajes: json['viajes'],
+      createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
+      updatedAt: json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
+      ubicacion: latLng,
+    );
+  } catch (e) {
+   
+    return BaseConductor(); // Retorna instancia vacía si falla
   }
+}
+
 
   Map<String, dynamic> toJson() {
     return {

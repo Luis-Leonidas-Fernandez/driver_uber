@@ -1,30 +1,35 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hydrated_bloc/hydrated_bloc.dart';
-import 'package:inri_driver/blocs/base/base_bloc.dart';
-import 'package:inri_driver/blocs/user/auth_bloc.dart';
 import 'package:inri_driver/constants/constants.dart';
 import 'package:inri_driver/pages/register_login/login/login_page.dart';
+import 'package:inri_driver/service/socket_service.dart';
 import 'package:inri_driver/service/storage_service.dart';
 import 'package:inri_driver/utils/viaje_utils.dart';
+
 
 class AppBarConstants {
   AppBarConstants._();
 
-  static AppBar customAppBar(BuildContext context) {
-    const nombre = 'Marco';
+  static final ValueNotifier<bool> isOnline = ValueNotifier<bool>(false);
+  final token =  StorageService.instance.getTokenUser();
+
+
+  static AppBar customAppBar(BuildContext context, String nombre) {
     final screenHeight = MediaQuery.of(context).size.height;
-    final storage = StorageService.instance;
+    String textoOriginal = nombre;
+    String name = textoOriginal.length > 7
+        ? '${textoOriginal.substring(0, 7)}...'
+        : textoOriginal;
 
     return AppBar(
       backgroundColor: Colors.transparent,
       elevation: 0,
       automaticallyImplyLeading: false,
       title: SafeArea(
-        // ✅ para evitar superposición con la barra de estado
         child: Padding(
-          padding: const EdgeInsets.only(top: 8.0), // 🔝 espacio extra opcional
+          padding: const EdgeInsets.only(top: 8.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -44,7 +49,7 @@ class AppBarConstants {
                 ),
               ),
               Text(
-                nombre,
+                name,
                 style: TextStyle(
                   fontSize: screenHeight <= 640 ? 18 : 20,
                   fontWeight: FontWeight.w700,
@@ -63,6 +68,39 @@ class AppBarConstants {
         ),
       ),
       actions: [
+        ValueListenableBuilder<bool>(
+          valueListenable: isOnline,
+          builder: (context, value, _) {
+            return Row(
+              children: [
+                Text(
+                  'Online',
+                  style: TextStyle(
+                    color: value ? const Color.fromARGB(255, 6, 242, 128) : Colors.grey,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Switch(
+                  value: value,
+                  activeColor: const Color.fromARGB(255, 1, 208, 108),
+                  onChanged: (val) async {
+                    isOnline.value = val;
+                    if (val) {
+                      // 🔐 Leer token del storage y conectar socket
+                      final token = await StorageService.instance.getTokenUser();
+                      if (token != null) {
+                      
+                        SocketService.instance.initSocket(token: token);
+                      }
+                    } else {
+                      SocketService.instance.finishSocket();
+                    }
+                  },
+                ),
+              ],
+            );
+          },
+        ),
         IconButton(
           onPressed: () {},
           icon: CircleAvatar(
@@ -76,20 +114,22 @@ class AppBarConstants {
         ),
         IconButton(
           onPressed: () async {
-            await storage.deleteIdOrder();
             if (!context.mounted) return;
             await ViajeUtils.finishTravelandClearAll(context);
             if (!context.mounted) return;
-
-            context.read<BaseBloc>().add(ClearBaseEvent()); // 🔥 limpia BaseBloc
-            context.read<AuthBloc>().add(const OnClearUserSessionEvent());
-
-            await HydratedBloc.storage.clear();
-            if (!context.mounted) return;
-
+            Future.delayed(const Duration(milliseconds: 200));
             Navigator.pushAndRemoveUntil(
               context,
-              MaterialPageRoute(builder: (_) => const LoginPage()),
+              PageRouteBuilder(
+                pageBuilder: (_, __, ___) => const LoginPage(),
+                transitionDuration: const Duration(milliseconds: 500),
+                transitionsBuilder: (_, animation, __, child) {
+                  return FadeTransition(
+                    opacity: animation,
+                    child: child,
+                  );
+                },
+              ),
               (_) => false,
             );
           },
@@ -104,3 +144,4 @@ class AppBarConstants {
     );
   }
 }
+

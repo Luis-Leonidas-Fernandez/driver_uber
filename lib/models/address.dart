@@ -20,7 +20,8 @@ class Address {
   double? precio;
   DateTime? horaEsperaInicio;
   DateTime? horaEsperaFin;
-  String? order; 
+  String? order;
+  bool? finalizado; 
 
   Address({
     this.ok,
@@ -41,6 +42,7 @@ class Address {
     this.horaEsperaInicio,
     this.horaEsperaFin,
     this.order,
+    this.finalizado,
   });
 
   factory Address.fromJson(Map<String, dynamic> json) {
@@ -53,14 +55,14 @@ class Address {
       online: json["online"] ?? false,
       estado: json["estado"] ?? false,
       cupon: (json["cupon"] != null && json["cupon"] is Map)
-          ? Map<String, dynamic>.from(json["cupon"])
-          : null,
+      ? Map<String, dynamic>.from(json["cupon"])
+      : null,
       ubicacion: json["ubicacion"] == null
-          ? null
-          : List<double>.from(json["ubicacion"]["coordinates"].map((x) => x.toDouble())),
+      ? null
+      : List<double>.from(json["ubicacion"]["coordinates"].map((x) => x.toDouble())),
       destino: json["destino"] == null
-          ? null
-          : List<double>.from(json["destino"]["coordinates"].map((x) => x.toDouble())), // 🆕 nuevo
+      ? null
+      : List<double>.from(json["destino"]["coordinates"].map((x) => x.toDouble())), // 🆕 nuevo
       createdAt: json["createdAt"] == null ? null : DateTime.parse(json["createdAt"]),
       updatedAt: json["updatedAt"] == null ? null : DateTime.parse(json["updatedAt"]),
       idDriver: json["idDriver"] ?? '',
@@ -69,6 +71,7 @@ class Address {
       horaEsperaInicio: json["horaEsperaInicio"] == null ? null : DateTime.parse(json["horaEsperaInicio"]),
       horaEsperaFin: json["horaEsperaFin"] == null ? null : DateTime.parse(json["horaEsperaFin"]),
       order: json["order"] ?? '',
+      finalizado: json["finalizado"] ?? false,
     );
   }
 
@@ -95,6 +98,7 @@ class Address {
         "horaEsperaInicio": horaEsperaInicio?.toIso8601String(),
         "horaEsperaFin": horaEsperaFin?.toIso8601String(),
         "order": order,
+        "finalizado": finalizado,
       };
 
   Map<String, dynamic> toJson() => toMap();
@@ -118,6 +122,7 @@ class Address {
     DateTime? horaEsperaInicio,
     DateTime? horaEsperaFin,
     String? order,
+    bool? finalizado,
   }) {
     return Address(
       ok: ok ?? this.ok,
@@ -138,6 +143,7 @@ class Address {
       horaEsperaInicio: horaEsperaInicio ?? this.horaEsperaInicio,
       horaEsperaFin: horaEsperaFin ?? this.horaEsperaFin,
       order: order ?? this.order,
+      finalizado: finalizado ?? this.finalizado,
     );
   }
 }

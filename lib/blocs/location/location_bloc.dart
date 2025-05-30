@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print
+
 
 import 'dart:async';
 
@@ -7,6 +7,7 @@ import 'package:equatable/equatable.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:inri_driver/blocs/address/address_bloc.dart';
 
 import 'package:inri_driver/service/socket_service.dart';
 import 'package:inri_driver/service/storage_service.dart';
@@ -17,11 +18,11 @@ part 'location_state.dart';
 
 class LocationBloc extends Bloc<LocationEvent, LocationState> {
 
-  
+  final AddressBloc addressBloc;
   StreamSubscription<Position>? positionStream;
   Timer? timer;
  
-  LocationBloc() : super(const LocationState()) {
+  LocationBloc({required this.addressBloc}) : super(const LocationState()) {
 
     on<OnStartFollowingUser>((event, emit) => emit(state.copyWith(followingUser: true)));
     on<OnStopFollowingUser>((event, emit) => emit(state.copyWith(followingUser: false)));
@@ -41,10 +42,9 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
     add(OnNewUserLocationEvent(LatLng(position.latitude, position.longitude)));
   }
 
-  void startFollowingUser() {
-    //Inicializa el socket
-    SocketService.instance.initSocket();
+  void startFollowingUser() async {
 
+    
     // FollowingUser = true;
     add(OnStartFollowingUser());
 
@@ -60,26 +60,45 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
   
 
   void sendPeriodicPosition() {
-   
-    timer = Timer.periodic(const Duration(minutes: 1), (timer) async {
-         print('🔄 Tick #${timer.tick}');
-        //  if (timer != null) {
-        //  print('⚠️ Timer ya está activo');
-        //  return;
-        // }
-    
-         final position = state.lastKnownLocation!;
 
-         print(' 🟢 [PERIODIC POSITION :] $position');  
+    if (timer != null && timer!.isActive) {
+    
+    return; // Ya hay un Timer corriendo
+  }
+
+ 
+
+       
+    timer = Timer.periodic(const Duration(minutes: 1), (timer) async {
+      
+         final position = state.lastKnownLocation;
 
          if (position == null) {
-         print('❌ No hay posición disponible');
+      
          return;
-         }    
+         }
 
-         print('📍 Posición actual: ${position.latitude}, ${position.longitude}');
+       
+         // 🚨 NUEVO: Consultamos AddressBloc directamente
+         final address = addressBloc.state.address;
+        
+         final isAccepted = addressBloc.state.isAccepted;
+         final viajeEnCurso = address?.finalizado == false;
+
+
+         final hasValidOrder = address != null && address.id != null && address.id!.isNotEmpty;
+         final hasDriverAssigned = address?.idDriver != null && address!.idDriver!.isNotEmpty;
+
+         if (!(hasValidOrder && hasDriverAssigned && isAccepted && viajeEnCurso)) {
          
+         this.timer?.cancel();
+         this.timer = null;
+         return;
+        }
+        
+          
          sendLocationDriver(position);
+         
         
       //}
     });
@@ -104,7 +123,7 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
           'idDriver': idUser,
           'idOrder': idOrder});
     await Future.delayed(const Duration(seconds: 2));
-    print('🛰️ Enviando ubicación al backend...');
+  
 
   }
 
@@ -115,7 +134,7 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
   }
 
   void stopFollowingUser() {
-    positionStream?.cancel();
+    positionStream?.cancel();   
     add(OnStopFollowingUser());
   }
 

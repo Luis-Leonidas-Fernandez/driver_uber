@@ -1,7 +1,3 @@
-// ignore_for_file: avoid_print
-
-
-
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class StorageService {
@@ -39,7 +35,8 @@ class StorageService {
 
   //Eliminar token y cerrar sesion
   Future logout() async {    
-  return await storage.delete(key: 'token', aOptions: _getAndroidOptions());
+   return await storage.delete(key: 'token', aOptions: _getAndroidOptions());
+   
   }  
 
   // Guardando ID del driver
@@ -89,6 +86,23 @@ class StorageService {
      await storage.delete(key: 'idOrder', aOptions: _getAndroidOptions());       
       
   }
+   //manejo de notificaciones
+
+  Future<void> saveNotified(String? orderId) async {
+    await storage.write(key: 'notified_$orderId', value: 'true');
+  }
+
+   // Consultar si ya fue notificado por id de orden
+  Future<bool> isAlreadyNotified(String? orderId) async {
+    final value = await storage.read(key: 'notified_$orderId');
+    return value == 'true';
+  }
+
+  // Limpiar notificación previa (opcional si querés resetear)
+  Future<void> clearNotified(String? orderId) async {
+    await storage.delete(key: 'notified_$orderId');
+  }
+
   
 
 }

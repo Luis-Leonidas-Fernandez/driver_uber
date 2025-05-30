@@ -16,10 +16,7 @@ class BuildCreateBasePage extends StatelessWidget {
           builder: (context, state) { 
 
           final isBaseRegistered = state.usuario?.base?.isNotEmpty == true;
-  
-          print('[ base registrada :] $isBaseRegistered');
-                    
-           
+         
            return isBaseRegistered == true
            ? const HomePage()
            : const MapCreateBase(); 

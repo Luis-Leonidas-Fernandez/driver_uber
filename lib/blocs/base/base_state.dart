@@ -28,7 +28,7 @@ BaseState copyWith({
 
   
   @override
-  List<Object?> get props => [baseSelected];
+  List<Object?> get props => [baseSelected, basesDisponibles];
 }
 
 

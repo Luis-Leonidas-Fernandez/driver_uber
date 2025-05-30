@@ -54,6 +54,7 @@ class _BuildSteeperFormRegistrationState
                 currentStep: _currentStep,
                 onStepContinue: () async {
                   if (!_validarStepActual()) {
+                   
                     return;
                   }
 

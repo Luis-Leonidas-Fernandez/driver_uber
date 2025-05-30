@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inri_driver/blocs/cronometro/cronometro_bloc.dart';
 import 'package:inri_driver/blocs/address/address_bloc.dart';
@@ -9,56 +10,60 @@ class CronometroWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final order = context.watch<AddressBloc>().state.address; 
+    final order = context.watch<AddressBloc>().state.address;
     final horaInicio = order?.horaEsperaInicio;
-
 
     if (horaInicio == null) return const SizedBox.shrink();
 
     return BlocBuilder<PrecioDistanciaBloc, PrecioDistanciaState>(
       builder: (context, stateDistancia) {
         final precioDistancia = stateDistancia.precioActual;
-        
+
         return BlocBuilder<CronometroBloc, CronometroState>(
           builder: (context, state) {
-            final isRunning = state.duration > 0;
+            final isRunning = state.isRunning!;
             //final double precioPorDistancia = order?.precio ?? 0.0;
             final double precioTotal = precioDistancia + state.price;
+
 
             return Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                GestureDetector(
-                  onTap: () {
-                    if (isRunning) {
-                      final now = DateTime.now();
-                      context
-                          .read<CronometroBloc>()
-                          .add(const StopCronometroEvent());
-                      context
-                          .read<AddressBloc>()
-                          .add(OnGuardarHoraEsperaFin(now));
-                    } else {
-                      context.read<CronometroBloc>().add(
-                            StartCronometroEvent(horaInicio: horaInicio),
-                          );
-                    }
-                  },
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: isRunning ? Colors.redAccent : Colors.green,
-                      shape: BoxShape.circle,
-                      boxShadow: const [
-                        BoxShadow(color: Colors.black26, blurRadius: 4)
-                      ],
+                Material(
+                  shape: const CircleBorder(),
+                  color: isRunning ? Colors.greenAccent : Colors.redAccent,
+                  child: InkWell(
+                    customBorder: const CircleBorder(),
+                    splashColor: Colors.white54,
+                    highlightColor: Colors.white10,
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      if (isRunning) {
+                        final now = DateTime.now();
+                        context
+                            .read<CronometroBloc>()
+                            .add(const StopCronometroEvent());
+                        context
+                            .read<AddressBloc>()
+                            .add(OnGuardarHoraEsperaFin(now));
+                      } else {
+                        context.read<CronometroBloc>().add(
+                              StartCronometroEvent(horaInicio: horaInicio),
+                            );
+                      }
+                    },
+                    child: const SizedBox(
+                      width: 40,
+                      height: 40,
+                      child: Icon(Icons.access_time,
+                          color: Colors.white, size: 20),
                     ),
-                    child: const Icon(Icons.access_time,
-                        color: Colors.white, size: 20),
                   ),
                 ),
+
                 const SizedBox(width: 12),
+
+                //Precio de espera
                 Container(
                   width: 130,
                   height: 40,
@@ -70,10 +75,13 @@ class CronometroWidget extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(state.formattedDuration,
-                        style: const TextStyle( color: Colors.white, fontWeight: FontWeight.bold),
+                      Text(
+                        state.formattedDuration,
+                        style: const TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.bold),
                       ),
-                      Text('\$ ${state.price.toStringAsFixed(0)}',
+                      Text(
+                        '\$ ${state.price.toStringAsFixed(0)}',
                         style: const TextStyle(color: Colors.white),
                       ),
                     ],

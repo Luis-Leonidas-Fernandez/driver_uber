@@ -16,27 +16,40 @@ class CronometroBloc extends Bloc<CronometroEvent, CronometroState> {
   }
 
   void _onStart(StartCronometroEvent event, Emitter<CronometroState> emit) {
-    _timer?.cancel();
-    final now = DateTime.now();
-    final inicio = event.horaInicio;
-    final durationSeconds = now.difference(inicio).inSeconds;
+  _timer?.cancel();
+  final now = DateTime.now();
+  final inicio = event.horaInicio;
+  final durationSeconds = now.difference(inicio).inSeconds;
 
-    emit(state.copyWith(
-      duration: durationSeconds,
-      price: 0.0,
-      horaEsperaInicio: inicio,
-    ));
+  final safeDuration = durationSeconds < 0 ? 0 : durationSeconds;
+  final initialPrice = _calcularPrecioPorMinuto(safeDuration);
 
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      add(const TickCronometroEvent());
-    });
-  }
+  emit(state.copyWith(
+    duration: safeDuration,
+    price: initialPrice,
+    horaEsperaInicio: inicio,
+    isRunning: true
+  ));
+
+  _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+    add(const TickCronometroEvent());
+  });
+}
+
 
   void _onStop(StopCronometroEvent event, Emitter<CronometroState> emit) {
+    
     _timer?.cancel();
+
+    final finalDuration = state.duration;
+    final finalPrice = _calcularPrecioPorMinuto(finalDuration);    
+    // Aseguramos que el último price y duration se mantengan
+
+
     emit(state.copyWith(
       duration: state.duration,
-      price: state.price,
+      price: finalPrice,
+      isRunning: false
     ));
   }
 
@@ -51,10 +64,13 @@ class CronometroBloc extends Bloc<CronometroEvent, CronometroState> {
     emit(const CronometroState());
   }
 
-  double _calcularPrecioPorMinuto(int durationInSeconds) {
-    final minutos = durationInSeconds / 60;
-    return (minutos * 40).ceilToDouble(); // 💰 ejemplo: $40 por minuto
-  }
+  double _calcularPrecioPorMinuto(int seconds) {
+  const precioPorMinuto = 20.0; // o traelo del tarifario si es dinámico
+  final minutos = seconds ~/ 60; // división entera: 0 si < 60
+  return minutos * precioPorMinuto;
+}
+
+
 
   @override
   Future<void> close() {

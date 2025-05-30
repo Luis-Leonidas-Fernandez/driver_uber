@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print
+
 
 import 'dart:async';
 import 'dart:io';
@@ -6,11 +6,13 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
-//import 'package:flutter_background_service_android/flutter_background_service_android.dart';
+
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:inri_driver/constants/time_notification.dart';
 
 import 'package:inri_driver/service/addresses_service.dart';
 import 'package:inri_driver/service/location_service.dart';
+import 'package:inri_driver/service/storage_service.dart';
 
 class BackgroundService {
   BackgroundService._internal();
@@ -123,8 +125,8 @@ void onStart(ServiceInstance service) async {
       notificationDetails,
     );
 
-    final isForeground = await service.isForegroundService();
-    debugPrint('🟢 ¿Está en Foreground? $isForeground');
+    await service.isForegroundService();
+   
 
     // Listeners
     service.on('setAsForeground').listen((event) {
@@ -144,19 +146,20 @@ void onStart(ServiceInstance service) async {
   Timer.periodic(const Duration(minutes: 1), (timer) async {
     try {
       final isActiveOrder = await LocationService.instance.isActiveOrder();
-      final existUserIdAndToken =
-          await LocationService.instance.getIdUserAndToken();
+      final existUserIdAndToken = await LocationService.instance.getIdUserAndToken();
+      final idOrder =  await StorageService.instance.getIdOrder(); 
+      final alreadyNotified = await StorageService.instance.isAlreadyNotified(idOrder);
 
-      if (isActiveOrder && existUserIdAndToken) {
+      if (isActiveOrder && existUserIdAndToken && !alreadyNotified) {
         if (service is AndroidServiceInstance &&
             await service.isForegroundService()) {
           final hasAddress = await existAddress();
 
           if (hasAddress) {
-            final now = DateTime.now();
-            const color = Colors.indigo;
-            final fecha = "${now.day}-${now.month}-${now.year}";
-            final hora = "${now.hour}:${now.minute}";
+           
+            const color = Color.fromARGB(255, 63, 81, 184); 
+            final fecha   =   Configuration.getFormattedDate();
+            final hora    =   Configuration.getFormattedTime();
             const message = 'Felicitaciones, tienes un nuevo viaje!';
 
             flutterLocalNotificationsPlugin.show(
@@ -177,13 +180,18 @@ void onStart(ServiceInstance service) async {
                 ),
               ),
             );
+
+            await StorageService.instance.saveNotified(idOrder);
           }
+
         }
+        
       }
-    } catch (e, stack) {
-      print("❌ Error en background: $e\n$stack");
+    } catch (_) {
+      // Error silenciado, se puede loguear si se desea
     }
-  });
+  }
+ );
 }
 
 Future<bool> existAddress() async {

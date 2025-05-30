@@ -67,9 +67,10 @@ void main() async {
         BlocProvider(create: (context) => CronometroBloc() ),
         BlocProvider(create: (context) => AuthBloc(authService: AuthService(), registerUserController: RegisterUserController())),
         BlocProvider(create: (context) => GpsBloc() ), 
-        BlocProvider(create: (context) => NotificationBloc()),       
-        BlocProvider(create: (context) => LocationBloc() ),
-        BlocProvider(create: (context) => AddressBloc(addressService: AddressService(), authBloc: BlocProvider.of<AuthBloc>(context))),
+        BlocProvider(create: (context) => NotificationBloc()),
+        BlocProvider(create: (context) => AddressBloc(addressService: AddressService(), authBloc: BlocProvider.of<AuthBloc>(context),
+        cronometroBloc: BlocProvider.of<CronometroBloc>(context))),
+        BlocProvider(create: (context) => LocationBloc(addressBloc: BlocProvider.of<AddressBloc>(context)) ),
         BlocProvider(create: (context) => MapBloc(locationBloc: BlocProvider.of<LocationBloc>(context),
         addressBloc: BlocProvider.of<AddressBloc>(context), backgroundLocationRepository: BackgroundInstance() )),
                
@@ -90,7 +91,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'driver inri',
-      initialRoute: 'login',
+      initialRoute: 'splash',
       routes: {  
     
         'login'         : (BuildContext context) => const LoginPage(),

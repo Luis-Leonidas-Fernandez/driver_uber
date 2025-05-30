@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print
+
 
 import 'dart:async';
 import 'dart:convert';
@@ -79,7 +79,7 @@ class AddressService {
     final token = await storage.getTokenUser();
     final idUser = await storage.getId();
     final newMap = {'id': null};    
-    
+   
 
     final Map<String, String> headers = {
       'Content-Type': 'application/json',
@@ -100,9 +100,10 @@ class AddressService {
       final dataMap = jsonDecode(resp.body)["orderUser"];      
          
       //convert data a Address Model
-      final Map<String, dynamic> response = dataMap ?? newMap;   
+      final Map<String, dynamic> response = dataMap ?? newMap;
+        
       final res = Address.fromJson(response);
-
+      
            
       await storage.deleteIdOrder();
       await storage.saveIdOrder(res.id);
@@ -164,7 +165,7 @@ class AddressService {
     }
   }
 
-  Future<dynamic> finishTravel(Address address) async {
+  Future<dynamic> cancelTravel(Address address) async {
 
     final token = await StorageService.instance.getTokenUser();
     final idUser = await StorageService.instance.getId();
@@ -177,7 +178,7 @@ class AddressService {
     final Map<String, String> data = {'idDriver': idUser!, 'order': 'libre', 'status': 'disponible'};
 
     final resp = await http.put(
-        Uri.parse('${Environment.apiUrl}/status/finish-travel'),
+        Uri.parse('${Environment.apiUrl}/status/cancel-travel'),
         headers: headers,
         body: json.encode(data));
 
@@ -191,6 +192,29 @@ class AddressService {
     }
   }
 
+  Future<dynamic> finishTravel(String token, String idDriver, double precioTotal) async {    
+  
+
+  final Map<String, String> headers = {'Content-Type': 'application/json', 'Charset': 'utf-8','x-token': token.toString()};
+  final Map<String, dynamic> data   = {'idDriver': idDriver, 'order': 'libre', 'precioTotal': precioTotal};
+
+  
+  final resp = await http.put(Uri.parse('${Environment.apiUrl }/status/remove/address'), headers: headers,
+   body: json.encode(data));
+
+
+  if ( resp.statusCode == 200 ) {
+
+
+  final Map<String, dynamic> address = jsonDecode(resp.body);
+  
+
+  return address;    
+} else {
+  return '';
+}
+}
+
   Future<dynamic> sendLocationBackground(driverPosition, idOrder) async {
 
     
@@ -198,7 +222,6 @@ class AddressService {
     final idDriver       = await StorageService.instance.getId();
     final locationDriver = jsonEncode(driverPosition);
 
-    print("******type position jsonEncode: $locationDriver****");
 
     final Map<String, String> headers = {
       'Content-Type': 'application/json',
@@ -245,13 +268,11 @@ class AddressService {
       final data = jsonDecode(resp.body);
       return data['ok'] == true;
     } else {
-      print('❌ Error en respuesta del servidor: ${resp.statusCode}');
       return false;
     }
     
-  } catch (e) {
-    print('🛑 Excepción al enviar horaEsperaFin: $e');
-    return false;
+  } catch (_) {
+      return false;
   }  
 
   

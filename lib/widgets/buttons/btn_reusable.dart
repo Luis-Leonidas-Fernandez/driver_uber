@@ -2,10 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:inri_driver/constants/constants.dart';
 
-
-
 class ButtonReusable extends StatefulWidget {
-
   final VoidCallback onPressed;
   final String text;
   const ButtonReusable(
@@ -26,8 +23,9 @@ class _ButtonReusableState extends State<ButtonReusable>
     super.initState();
     controller = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 1800));
-
   }
+
+
 
   @override
   void dispose() {
@@ -37,8 +35,6 @@ class _ButtonReusableState extends State<ButtonReusable>
 
   @override
   Widget build(BuildContext context) {
-   
-
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
 
@@ -49,8 +45,7 @@ class _ButtonReusableState extends State<ButtonReusable>
         builder: (context, child) {
           return GestureDetector(
             onTap: () {
-             
-              if (!isAnimating ) {
+              if (!isAnimating) {
                 setState(() {
                   isTap = true;
                   isAnimating = true;
@@ -64,23 +59,23 @@ class _ButtonReusableState extends State<ButtonReusable>
                     });
                   });
                 });
-              }              
-
+              }
             },
             child: Container(
                 width: 372,
-                height: screenHeight < 362 ? 50 : 59,
+                height: screenHeight * 0.065,
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(colors: [
-            
-                    
-                    AppConstants.backgroundbottom,
-                    AppConstants.backgroundbottom,
-                   const Color.fromARGB(255, 127, 224, 253),
-                    
-                  ],
-                  stops: isTap? [ 0.0, controller.value, 1.0] : [1.0,0.0,0.0],
-                  begin: Alignment.centerRight, end: Alignment.centerLeft),
+                  gradient: LinearGradient(
+                      colors: [
+                        AppConstants.backgroundbottom,
+                        AppConstants.backgroundbottom,
+                        const Color.fromARGB(255, 127, 224, 253),
+                      ],
+                      stops: isTap
+                          ? [0.0, controller.value, 1.0]
+                          : [1.0, 0.0, 0.0],
+                      begin: Alignment.centerRight,
+                      end: Alignment.centerLeft),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Container(
@@ -88,8 +83,7 @@ class _ButtonReusableState extends State<ButtonReusable>
                     height: screenHeight < 362 ? 51 : 55,
                     decoration: BoxDecoration(
                         border: Border.all(
-                            color: AppConstants.blur.withValues(),
-                            width: 2.5),
+                            color: AppConstants.blur.withValues(), width: 2.5),
                         borderRadius: BorderRadius.circular(10),
                         gradient: LinearGradient(
                             colors: [
@@ -102,10 +96,13 @@ class _ButtonReusableState extends State<ButtonReusable>
                             ],
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter)),
-                    child: Row(children: [
+                    child: Row(
+                      
+                      children: [
+                        
                       Container(
                         constraints:
-                            const BoxConstraints(maxHeight: 54, maxWidth: 95),
+                            const BoxConstraints(maxHeight: 54, maxWidth: 85),
                         decoration: BoxDecoration(
                             borderRadius: const BorderRadius.only(
                                 topLeft: Radius.circular(8),
@@ -125,7 +122,11 @@ class _ButtonReusableState extends State<ButtonReusable>
                           child: Text(
                             widget.text,
                             style: GoogleFonts.roboto(
-                                fontSize: screenWidth <= 348 ? 16 : 20,
+                                fontSize: screenWidth <= 320
+                                    ? 14
+                                    : screenWidth <= 400
+                                        ? 20
+                                        : 20,
                                 color: Colors.white,
                                 fontWeight: FontWeight.w500,
                                 letterSpacing: 0.7),
@@ -134,7 +135,7 @@ class _ButtonReusableState extends State<ButtonReusable>
                       ),
                       Container(
                         constraints:
-                            const BoxConstraints(maxHeight: 54, maxWidth: 95),
+                            const BoxConstraints(maxHeight: 54, maxWidth: 85),
                         decoration: BoxDecoration(
                             borderRadius: const BorderRadius.only(
                                 topLeft: Radius.circular(8),

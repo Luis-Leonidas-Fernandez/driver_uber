@@ -5,6 +5,7 @@ import 'package:inri_driver/constants/constants.dart';
 import 'package:inri_driver/pages/register_login/register/widgets/steeper_register.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
 
@@ -68,7 +69,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       right: 05.0,
                       child: const FormRegister()),
                   Positioned(
-                    top: height * 0.23,
+                    top: height * 0.18,
                     left: 10.0,
                     right: 10.0,
                     child: Container(
@@ -127,21 +128,24 @@ class _FormRegisterState extends State<FormRegister> {
                         Color.fromARGB(255, 42, 138, 248),
                       ]).createShader(bounds);
                 },
-                child: Text('Bienvenido, lo hemos extrañado',
+                child: Text('Bienvenido, a Inri Conductores',
                     style: GoogleFonts.roboto(
                         fontSize: 18,
                         color: AppConstants.textColor,
                         fontWeight: FontWeight.bold)),
               ),
-              SizedBox(height: heigthScreen * 0.27),
+              SizedBox(height: heigthScreen * 0.21),
 
               BlocListener<AuthBloc, AuthState>(
                 listener: (context, state) {
                   if (state.usuario != null) {
-                    debugPrint('📢 AuthBloc emitió nuevo estado. Usuario: ${state.usuario}');
+                
                   // El usuario ya fue registrado con éxito y está en el estado
+                 
+                  
                   Navigator.pushReplacementNamed(context, 'loading');
                    }
+                  
                 },
                 child: const BuildSteeperFormRegistration(),
               ),
@@ -159,7 +163,7 @@ class _FormRegisterState extends State<FormRegister> {
                   TextButton(
                       onPressed: () {
                         if (context.mounted) {
-                          () =>
+                         
                               Navigator.pushReplacementNamed(context, 'login');
                         }
                       },

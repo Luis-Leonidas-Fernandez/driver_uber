@@ -47,23 +47,33 @@ class BaseService {
 
     final token = await storage.getTokenUser();
     
+    
     final Map<String, String> headers = {
       'Content-Type': 'application/json',
       'Charset': 'utf-8',
       'x-token': token.toString()
     };
 
+      //final url = '${Environment.apiUrl}/base/all';
+   
     final response = await http.get(Uri.parse('${Environment.apiUrl}/base/all'), headers: headers);
 
     if (response.statusCode == 200) {
+
       final data = jsonDecode(response.body);
+    
       if (data['ok'] == true && data['bases'] != null) {
+
         final List basesJson = data['bases'];
+       
         return basesJson.map((e) => BaseConductor.fromJson(e)).toList();
+
       } else {
+      
         throw Exception('Respuesta inválida del servidor');
       }
     } else {
+      
       throw Exception('Error al obtener bases: ${response.statusCode}');
     }
   }
