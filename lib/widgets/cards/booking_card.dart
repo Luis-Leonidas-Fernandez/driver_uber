@@ -270,6 +270,10 @@ class _BookingCardState extends State<BookingCard> {
             child: ButtonReusable(
               text: 'Finalizar viaje',
               onPressed: () async {
+
+                final precioDistancia = context.read<PrecioDistanciaBloc>().state.precioActual;
+                final precioEspera = context.read<CronometroBloc>().state.price;
+
                 final confirmed = await showDialog<bool>(
                   context: context,
                   builder: (context) => AlertDialog(
@@ -294,9 +298,14 @@ class _BookingCardState extends State<BookingCard> {
 
                 if (confirmed != true) return;
                 if (!context.mounted) return;
+               
 
                 locationBloc.stopPeriodicTask();
-                context.read<AddressBloc>().add(FinishOrderEvent());
+                context.read<AddressBloc>().add(FinishOrderEvent(
+                  precioDistancia: precioDistancia,
+                  precioPorEspera: precioEspera,
+                ));
+              
                 context
                     .read<CronometroBloc>()
                     .add(const ResetCronometroEvent());
@@ -304,6 +313,7 @@ class _BookingCardState extends State<BookingCard> {
                     .read<PrecioDistanciaBloc>()
                     .add(const ResetearPrecioDistanciaEvent());
                 HydratedBloc.storage.write('AddressBloc', null);
+                
               },
             ),
           );

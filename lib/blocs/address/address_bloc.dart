@@ -17,6 +17,7 @@ class AddressBloc extends HydratedBloc<AddressEvent, AddressState> {
   
   final AuthBloc authBloc;
   final CronometroBloc cronometroBloc;
+  final PrecioDistanciaBloc precioDistanciaBloc;
   AddressService addressService;
   Timer? _pollingTimer;
   final storage = StorageService.instance;
@@ -25,7 +26,7 @@ class AddressBloc extends HydratedBloc<AddressEvent, AddressState> {
   final StreamController<Address> _addressController = StreamController();
   Stream get  addressOrder => _addressController.stream;
 
-  AddressBloc({required this.addressService, required this.authBloc, required this.cronometroBloc}) : super( const AddressState()) {
+  AddressBloc({required this.addressService, required this.authBloc, required this.cronometroBloc, required this.precioDistanciaBloc}) : super( const AddressState()) {
 
   on<OnStartLoadingAddress>((event, emit) => emit(state.copyWith(loading: true)));
   on<OnStopLoadingAddress> ((event, emit)  => emit(state.copyWith(loading: false)));
@@ -160,11 +161,11 @@ class AddressBloc extends HydratedBloc<AddressEvent, AddressState> {
   final  token = await storage.getTokenUser();
   final idDriver = authBloc.state.usuario?.id;
 
-  final precioPorEspera = cronometroBloc.state.price; 
+  final precioDistancia = event.precioDistancia;
+  final precioPorEspera = event.precioPorEspera;
+  final precioTotal = precioDistancia + precioPorEspera;
 
- 
-  final precioPorDistancia = state.address?.precio ?? 0.0;
-  final precioTotal = precioPorDistancia + precioPorEspera;
+
 
   if (state.address != null) {
    // Si necesitás guardarlo en el bloc:
@@ -172,7 +173,8 @@ class AddressBloc extends HydratedBloc<AddressEvent, AddressState> {
   } 
 
   
-  if (token == null || idDriver == null) {   
+  if (token == null || idDriver == null) { 
+   
    return;
   }
    
@@ -226,7 +228,7 @@ class AddressBloc extends HydratedBloc<AddressEvent, AddressState> {
                          current.horaEsperaFin != respOrder.horaEsperaFin;
 
       if (hasChanged) {
-               
+            
         add(AddAddressEvent(respOrder));
       } else {
        return;

@@ -35,8 +35,13 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
   }
 
   Future getCurrentPosition() async {
+
+    const LocationSettings locationSettings = LocationSettings(
+    accuracy: LocationAccuracy.high,
+  
+   );
     final position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
+        locationSettings: locationSettings);
   
 
     add(OnNewUserLocationEvent(LatLng(position.latitude, position.longitude)));

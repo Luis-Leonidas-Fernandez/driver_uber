@@ -1,0 +1,2 @@
+/Users/luis/Desktop/conductores_uber/driver_uber/android/app/.cxx/Debug/i2j571t5/x86_64/CMakeFiles/edit_cache.dir
+/Users/luis/Desktop/conductores_uber/driver_uber/android/app/.cxx/Debug/i2j571t5/x86_64/CMakeFiles/rebuild_cache.dir

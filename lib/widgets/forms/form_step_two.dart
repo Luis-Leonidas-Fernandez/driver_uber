@@ -254,24 +254,25 @@ class _FormStepTwoState extends State<FormStepTwo> {
   lastDate: DateTime(2100),
   builder: (context, child) {
     return Theme(
-      data: Theme.of(context).copyWith(
-        colorScheme: const ColorScheme.dark(
-          primary: Colors.deepPurpleAccent,
-          onPrimary: Colors.white,
-          surface: Color(0xFF1E1E1E),
-          onSurface: Colors.white,
-        ),
-        dialogTheme: const DialogTheme(
-          backgroundColor: Color(0xFF1A1A1A),
-        ),
-        textButtonTheme: TextButtonThemeData(
-          style: TextButton.styleFrom(
-            foregroundColor: const Color.fromARGB(255, 251, 250, 252),
-          ),
-        ),
+  data: Theme.of(context).copyWith(
+    colorScheme: const ColorScheme.dark(
+      primary: Colors.deepPurpleAccent,
+      onPrimary: Colors.white,
+      surface: Color(0xFF1E1E1E),
+      onSurface: Colors.white,
+    ),
+    dialogTheme: const DialogThemeData(
+      backgroundColor: Color(0xFF1A1A1A),
+    ),
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(
+        foregroundColor: const Color.fromARGB(255, 251, 250, 252),
       ),
-      child: child!,
-    );
+    ),
+  ),
+  child: child!,
+);
+
   },
 );
 

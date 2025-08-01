@@ -39,7 +39,19 @@ class OnAcceptedTravel extends AddressEvent{}
 //conductor cancela viaje
 class OnCancelTravel extends AddressEvent{}
 // conductor finaliza viaje
-class FinishOrderEvent extends AddressEvent {}
+class FinishOrderEvent extends AddressEvent {
+
+  final double precioDistancia;
+  final double precioPorEspera;
+
+  const FinishOrderEvent({
+    required this.precioDistancia,
+    required this.precioPorEspera,
+  });
+
+  @override
+  List<Object?> get props => [precioDistancia, precioPorEspera];
+}
 
 
 

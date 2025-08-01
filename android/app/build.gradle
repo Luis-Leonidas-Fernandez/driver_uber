@@ -34,7 +34,7 @@ if (keystorePropertiesFile.exists()) {
 
 android {
 
-    compileSdkVersion 34 
+    compileSdkVersion 35 //modificado 
     namespace 'com.luisleonidasfernandez.flutterinridriver' 
     //flutter.compileSdkVersion
     
@@ -63,11 +63,11 @@ android {
         applicationId "com.luisleonidasfernandez.flutterinridriver"
         minSdkVersion 21 
         //flutter.minSdkVersion
-        targetSdkVersion 34 
+        targetSdkVersion 35 
         //flutter.targetSdkVersion
-        versionCode 12 
+        versionCode 13 
         //flutterVersionCode.toInteger()
-        versionName "2.0.2"
+        versionName "2.0.3"
         //flutterVersionName
         manifestPlaceholders['foregroundServiceType'] = 'location'
         multiDexEnabled true
@@ -104,5 +104,5 @@ flutter {
 
 
 dependencies {
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.3'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.4'
 }

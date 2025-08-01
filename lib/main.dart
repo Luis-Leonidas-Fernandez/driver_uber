@@ -69,7 +69,7 @@ void main() async {
         BlocProvider(create: (context) => GpsBloc() ), 
         BlocProvider(create: (context) => NotificationBloc()),
         BlocProvider(create: (context) => AddressBloc(addressService: AddressService(), authBloc: BlocProvider.of<AuthBloc>(context),
-        cronometroBloc: BlocProvider.of<CronometroBloc>(context))),
+        cronometroBloc: BlocProvider.of<CronometroBloc>(context), precioDistanciaBloc: BlocProvider.of<PrecioDistanciaBloc>(context))),
         BlocProvider(create: (context) => LocationBloc(addressBloc: BlocProvider.of<AddressBloc>(context)) ),
         BlocProvider(create: (context) => MapBloc(locationBloc: BlocProvider.of<LocationBloc>(context),
         addressBloc: BlocProvider.of<AddressBloc>(context), backgroundLocationRepository: BackgroundInstance() )),

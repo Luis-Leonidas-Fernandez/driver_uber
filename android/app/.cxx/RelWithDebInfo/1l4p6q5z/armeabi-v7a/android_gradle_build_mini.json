@@ -1,0 +1,20 @@
+{
+  "buildFiles": [
+    "/Users/luis/development/flutter/packages/flutter_tools/gradle/src/main/groovy/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/Users/luis/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+      "-C",
+      "/Users/luis/Desktop/conductores_uber/driver_uber/android/app/.cxx/RelWithDebInfo/1l4p6q5z/armeabi-v7a",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/Users/luis/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+    "-C",
+    "/Users/luis/Desktop/conductores_uber/driver_uber/android/app/.cxx/RelWithDebInfo/1l4p6q5z/armeabi-v7a",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {}
+}

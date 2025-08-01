@@ -197,11 +197,11 @@ class AddressService {
 
   final Map<String, String> headers = {'Content-Type': 'application/json', 'Charset': 'utf-8','x-token': token.toString()};
   final Map<String, dynamic> data   = {'idDriver': idDriver, 'order': 'libre', 'precioTotal': precioTotal};
-
+  
   
   final resp = await http.put(Uri.parse('${Environment.apiUrl }/status/remove/address'), headers: headers,
    body: json.encode(data));
-
+ 
 
   if ( resp.statusCode == 200 ) {
 
