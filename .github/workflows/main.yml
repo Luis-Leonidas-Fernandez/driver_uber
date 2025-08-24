@@ -1,0 +1,80 @@
+name: Android Release (Conductor) to Google Play
+
+on:
+  workflow_dispatch:
+    inputs:
+      track:
+        description: "Track (internal, alpha, beta, production)"
+        required: true
+        default: "internal"
+      build_name:
+        description: "versionName (ej: 2.0.4)"
+        required: true
+        default: "2.0.4"
+      build_number:
+        description: "versionCode (ej: 14)"
+        required: true
+        default: "14"
+      dry_run:
+        description: "Solo compilar (no subir a Play)"
+        required: true
+        default: "true"
+
+jobs:
+  build-and-deploy-driver:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Flutter pub get
+        run: flutter pub get
+
+      - name: Write local.properties versions
+        run: |
+          echo "flutter.versionName=${{ github.event.inputs.build_name }}" >> android/local.properties
+          echo "flutter.versionCode=${{ github.event.inputs.build_number }}" >> android/local.properties
+
+      - name: Restore keystore & key.properties
+        run: |
+          echo "$KS" | base64 -d > android/app/key.jks
+          cat > android/key.properties << EOF
+          storePassword=${{ secrets.KEYSTORE_PASSWORD }}
+          keyPassword=${{ secrets.KEY_PASSWORD }}
+          keyAlias=${{ secrets.KEY_ALIAS }}
+          storeFile=key.jks
+          EOF
+        env:
+          KS: ${{ secrets.KEYSTORE_BASE64 }}
+
+      - name: Build appbundle (AAB)
+        run: |
+          flutter clean
+          flutter build appbundle --release
+          ls -lah build/app/outputs/bundle/release
+
+      - name: Upload to Google Play
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: "com.luisleonidasfernandez.flutterinridriver"
+          releaseFiles: build/app/outputs/bundle/release/app-release.aab
+          track: ${{ github.event.inputs.track }}
+          status: completed
+
+      - name: Done
+        run: echo "🎉 Conductor listo. Upload=${{ github.event.inputs.dry_run != 'true' && 'sí' || 'no (dry_run)'}}"
