@@ -1,8 +1,11 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:inri_driver/blocs/user/auth_bloc.dart';
 import 'package:inri_driver/constants/constants.dart';
 import 'package:inri_driver/pages/register_login/register/widgets/steeper_register.dart';
+import 'package:inri_driver/widgets/dialogs/error_display.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 
@@ -24,7 +27,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   void dispose() {
-    _authBloc.registerUserController.dispose(); // Ahora sí, sin errores
+    //_authBloc.registerUserController.dispose(); // Ahora sí, sin errores
     super.dispose();
   }
 
@@ -106,7 +109,10 @@ class _FormRegisterState extends State<FormRegister> {
         child: Center(
       child: SingleChildScrollView(
         child: Container(
-          height: 1250,
+          constraints: BoxConstraints(
+            minHeight: 600,
+            maxHeight: max(MediaQuery.of(context).size.height * 1.5, 1250),
+          ),
           color: Colors.transparent,
           child: Column(
             children: [
@@ -134,24 +140,36 @@ class _FormRegisterState extends State<FormRegister> {
                         color: AppConstants.textColor,
                         fontWeight: FontWeight.bold)),
               ),
-              SizedBox(height: heigthScreen * 0.21),
+              SizedBox(height: heigthScreen * 0.18),
 
               BlocListener<AuthBloc, AuthState>(
                 listener: (context, state) {
-                  if (state.usuario != null) {
-                
-                  // El usuario ya fue registrado con éxito y está en el estado
-                 
-                  
-                  Navigator.pushReplacementNamed(context, 'loading');
+                   if (state.usuario != null) {
+                    // El usuario ya fue registrado con éxito y está en el estado                 
+                    Navigator.pushReplacementNamed(context, 'loading');
                    }
-                  
+                   // Los errores se manejan automáticamente con ErrorDisplayWidget
                 },
-                child: const BuildSteeperFormRegistration(),
+                child: Column(
+                  children: [
+                    // Widget para mostrar errores de registro
+                    BlocBuilder<AuthBloc, AuthState>(
+                      builder: (context, state) {
+                        return ErrorDisplayWidget(
+                          state: state,
+                          onClearError: () => context.read<AuthBloc>().clearError(),
+                        );
+                      },
+                    ),
+                    SizedBox(height: heigthScreen < 365 ? 1 : 20),
+                    const BuildSteeperFormRegistration(),
+                  ],
+                ),
               ),
-              SizedBox(height: heigthScreen < 365 ? 1 : 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+              SizedBox(height: heigthScreen < 365 ? 1 : 4),
+              Wrap(
+                alignment: WrapAlignment.center,
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   const Text(
                     '¿Tienes Cuenta?',

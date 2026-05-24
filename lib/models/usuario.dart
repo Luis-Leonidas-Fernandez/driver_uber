@@ -25,7 +25,9 @@ class Usuario {
         required this.tokenMapBox,
         required this.idMapBox,
         required this.mapToken,
-        this.base
+        this.base,
+        this.fotoFrente,
+        this.fotoDorso
 
     });
 
@@ -44,6 +46,9 @@ class Usuario {
     String idMapBox;
     String mapToken;
     String? base;
+    String? fotoFrente;
+    String? fotoDorso;
+
 
     factory Usuario.fromJson(Map<String, dynamic> json) => Usuario(
         email: json["email"],
@@ -55,12 +60,14 @@ class Usuario {
         modelo: json["modelo"],
         patente: json["patente"],
         licencia: json["licencia"],
-        id: json["_id"]?? [''],  
+        id: json["_id"]?? '',  
         urlMapbox: json["urlMapbox"],
         tokenMapBox: json["tokenMapBox"],
         idMapBox: json["idMapBox"],
         mapToken: json["mapToken"],
-        base: json["base"] ?? ""
+        base: json["base"] ?? "",
+        fotoFrente: json["fotoFrente"],
+        fotoDorso: json["fotoDorso"],
     );
 
     Map<String, dynamic> toJson() => {
@@ -79,6 +86,8 @@ class Usuario {
         "idMapBox": idMapBox,
         "mapToken": mapToken,
         "base": base,
+        "fotoFrente": fotoFrente,
+        "fotoDorso": fotoDorso,
 
     };
 
@@ -98,6 +107,8 @@ class Usuario {
   String? idMapBox,
   String? mapToken,
   String? base,
+  String? fotoFrente,
+  String? fotoDorso,
 }) {
   return Usuario(
     email: email ?? this.email,
@@ -115,6 +126,8 @@ class Usuario {
     idMapBox: idMapBox ?? this.idMapBox,
     mapToken: mapToken ?? this.mapToken,
     base: base ?? this.base,
+    fotoFrente: fotoFrente ?? this.fotoFrente,
+    fotoDorso: fotoDorso ?? this.fotoDorso,
   );
 }
   

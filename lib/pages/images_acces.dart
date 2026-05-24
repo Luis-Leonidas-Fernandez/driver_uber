@@ -1,25 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inri_driver/blocs/blocs.dart';
-import 'package:inri_driver/pages/images_acces.dart';
+import 'package:inri_driver/pages/create_base.dart';
 
 
-class NotificationsAccessPage extends StatelessWidget {
-  const NotificationsAccessPage({Key? key}) : super(key: key);
+class ImageAccessPage extends StatelessWidget {
+  const ImageAccessPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: BlocBuilder<NotificationBloc, NotificationState>(
+        child: BlocBuilder<ImagesBloc, ImagesState>(
           builder: (context, state) { 
 
-            final notificationEnabled = state.notificationModel?.isNotificationPermissionGranted?? false;            
+            final notificationEnabled = state.isImagePermissionGranted;            
 
     
            return notificationEnabled == true
-           ? const ImageAccessPage()
-           : const _AccessNotificationButton(); 
+           ? const BuildCreateBasePage()
+           : const _AccessImagesButton(); 
           }
           )
       ),
@@ -27,8 +27,8 @@ class NotificationsAccessPage extends StatelessWidget {
   }
 }
 
-class _AccessNotificationButton extends StatelessWidget {
-  const _AccessNotificationButton({
+class _AccessImagesButton extends StatelessWidget {
+  const _AccessImagesButton({
     Key? key,
   }) : super(key: key);
 
@@ -37,16 +37,16 @@ class _AccessNotificationButton extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-       const Text('Habilitar acceso a las Notificaciones'),
+       const Text('Habilitar acceso a las Imagenes'),
        MaterialButton(
         color: Colors.black,
         shape: const StadiumBorder(),
         elevation: 0,
         onPressed: (){
           //solicita privilegios de nontificacion
-          final notificationBloc = BlocProvider.of<NotificationBloc>(context);
+          final imageBloc = BlocProvider.of<ImagesBloc>(context);
            
-          notificationBloc.askNotificationAccess();
+          imageBloc.requestImagePermission();
           
         },
         child:  const Text('Solicitar Acceso',
@@ -56,10 +56,3 @@ class _AccessNotificationButton extends StatelessWidget {
     );
   }
 }
-
-
-  
-
-
-
-

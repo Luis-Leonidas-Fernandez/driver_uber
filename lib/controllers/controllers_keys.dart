@@ -9,5 +9,6 @@ class ControllerKeys {
   static const modelo = "modelo";
   static const patente = "patente";
   static const licencia = "licencia";
-  
+  static const fotoFrente = "fotoFrente";
+  static const fotoDorso = "fotoDorso";
 }

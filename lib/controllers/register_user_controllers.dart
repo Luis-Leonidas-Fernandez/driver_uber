@@ -2,10 +2,14 @@
 import 'package:flutter/material.dart';
 import 'package:inri_driver/controllers/controllers_keys.dart';
 import 'package:intl/intl.dart';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 
 
 
 class RegisterUserController {
+
+  final ImagePicker _picker = ImagePicker();
 
   final Map<String, TextEditingController> controllers = {
 
@@ -20,6 +24,8 @@ class RegisterUserController {
     ControllerKeys.modelo: TextEditingController(),
     ControllerKeys.patente: TextEditingController(),
     ControllerKeys.licencia: TextEditingController(),
+    ControllerKeys.fotoDorso: TextEditingController(),
+    ControllerKeys.fotoFrente: TextEditingController()
     
   };
   
@@ -43,6 +49,9 @@ class RegisterUserController {
     "modelo": controllers[ControllerKeys.modelo]?.text ?? '',
     "patente": controllers[ControllerKeys.patente]?.text ?? '',
     "licencia": controllers[ControllerKeys.licencia]?.text ?? '',
+    "fotoFrente": controllers[ControllerKeys.fotoFrente]?.text ?? '',
+    "fotoDorso": controllers[ControllerKeys.fotoDorso]?.text ?? '',  
+
 
   };
 
@@ -53,14 +62,11 @@ class RegisterUserController {
   
 }
 
-
-
-  
-  void guardarValoresEnCargaController() {   
+ void guardarValoresEnCargaController() {   
     controllers.forEach((key, controller) {          
-    });
+});
         
-  }
+}
 
   
 
@@ -71,8 +77,6 @@ class RegisterUserController {
         controller.clear();
       }
     });
-
-   
   }
 
   /// 🛠️ No olvides agregar `dispose()` para evitar memory leaks
@@ -111,5 +115,39 @@ class RegisterUserController {
   final fechaDateTime = DateTime.parse('$anio-$mes-$dia');
   return fechaDateTime.toUtc().toIso8601String().replaceFirst('Z', '+00:00');
 }
+
+Future<void> pickImage({
+    required bool isFrente,
+    required VoidCallback onChanged,
+  }) async {
+    final picked = await _picker.pickImage(source: ImageSource.gallery);
+
+    if (picked != null) {
+      final file = File(picked.path);
+      final path = file.path;
+
+      // Guardamos la ruta en el controlador correspondiente
+      if (isFrente) {
+        controllers[ControllerKeys.fotoFrente]?.text = path;
+      } else {
+        controllers[ControllerKeys.fotoDorso]?.text = path;
+      }
+
+      // Notificamos al UI
+      onChanged();
+    }
+  }
+
+  // Getters para mostrar el nombre de archivo seleccionado
+  String get nombreFotoFrente {
+    final path = controllers[ControllerKeys.fotoFrente]?.text ?? '';
+    return path.split('/').last;
+  }
+
+  String get nombreFotoDorso {
+    final path = controllers[ControllerKeys.fotoDorso]?.text ?? '';
+    return path.split('/').last;
+  }
+
 
 }

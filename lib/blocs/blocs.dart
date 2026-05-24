@@ -7,3 +7,4 @@ export 'package:inri_driver/blocs/user/auth_bloc.dart';
 export 'package:inri_driver/blocs/cronometro/cronometro_bloc.dart';
 export 'package:inri_driver/blocs/tarifa/tarifario_bloc.dart';
 export 'package:inri_driver/blocs/precioDistancia/precio_distancia_bloc.dart';
+export 'package:inri_driver/blocs/images/images_bloc.dart';
