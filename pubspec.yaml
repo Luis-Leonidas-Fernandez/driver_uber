@@ -3,62 +3,53 @@ description: Aplicación Flutter para conductores.
 
 publish_to: 'none'
 
-version: 2.0.3+13
-
+version: 2.0.4+14
 
 environment:
   sdk: ">=3.1.0 <4.0.0"
 
 dependencies:
+  bloc: ^9.0.0
+  connectivity_plus: ^5.0.2
+  cron: ^0.5.1
+  cupertino_icons: ^1.0.5
+  equatable: ^2.0.5
   flutter:
     sdk: flutter
-
-  # UI
-  cupertino_icons: ^1.0.5
-  iconsax: ^0.0.8
+  flutter_background_service: ^5.0.5
+  flutter_background_service_android: ^6.2.2
+  flutter_bloc: ^9.1.0
+  flutter_local_notifications: ^19.0.3
+  flutter_map: ^7.0.0
+  flutter_secure_storage: ^9.0.0
+  geocoding: ^3.0.0
+  geolocator: ^14.0.2
   google_fonts: ^6.0.0
   hexcolor: ^3.0.1
-
-  # Estado
-  bloc: ^9.0.0
-  flutter_bloc: ^9.1.0
-  hydrated_bloc: ^10.0.0
-  provider: ^6.1.1
-  equatable: ^2.0.5
-
-  # Funcionalidad
   http: ^1.1.0
+  http_parser: ^4.0.2
+  hydrated_bloc: ^10.0.0
+  iconsax: ^0.0.8
+  image_picker: ^1.1.2
   intl: ^0.18.1
-  cron: ^0.5.1
+  latlong2: ^0.9.0
   path_provider: ^2.1.2
-  flutter_secure_storage: ^9.0.0
   permission_handler: ^12.0.1
-  connectivity_plus: ^5.0.2
+  provider: ^6.1.1
   socket_io_client: ^3.1.2
   webview_flutter: ^4.5.0
 
-  # Localización y mapas
-  geolocator: ^14.0.2
-  flutter_map: ^7.0.0
-  latlong2: ^0.9.0
-  geocoding: ^3.0.0
-
-  # Notificaciones y servicios en segundo plano
-  flutter_local_notifications: ^19.0.3
-  flutter_background_service: ^5.0.5
-  flutter_background_service_android: ^6.2.2
-
 dev_dependencies:
+  flutter_lints: ^2.0.1
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.1
 
 flutter:
   uses-material-design: true
 
   assets:
     - assets/car2.webp
-    - assets/icon.webp   
+    - assets/icon.webp
     - assets/remis.webp
     - assets/map.webp
     - assets/fontana.webp
