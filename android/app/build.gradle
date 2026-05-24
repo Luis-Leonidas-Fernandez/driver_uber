@@ -65,10 +65,8 @@ android {
         //flutter.minSdkVersion
         targetSdkVersion 35 
         //flutter.targetSdkVersion
-        versionCode 13 
-        //flutterVersionCode.toInteger()
-        versionName "2.0.3"
-        //flutterVersionName
+        versionCode flutterVersionCode.toInteger()
+        versionName flutterVersionName
         manifestPlaceholders['foregroundServiceType'] = 'location'
         multiDexEnabled true
         
