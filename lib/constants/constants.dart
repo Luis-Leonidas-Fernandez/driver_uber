@@ -121,50 +121,5 @@ begin: Alignment.topCenter, end: Alignment.bottomCenter
 );
 
 
-
-  // static AppBar customAppBar(BuildContext context,  AddressBloc addressBloc, AuthBloc usuarioBloc) {    
-    
-  //   final nombre = usuarioBloc.state.usuario!.nombre;
-  //   ResponsiveUtil responsiveUtil = ResponsiveUtil(context);
-  //   double responsiveFontSize = responsiveUtil.getResponsiveFontSize(19);
-
-  //   return AppBar(
-  //     backgroundColor: cardColor,
-  //     elevation: 0,
-  //     shape: const RoundedRectangleBorder(
-  //       borderRadius: BorderRadius.only(
-  //         bottomLeft: Radius.circular(22),
-  //         bottomRight: Radius.circular(22),
-  //       ),
-  //     ),
-  //     title: Center(
-  //       child: Text(
-  //         'Bienvenido a Inri $nombre',
-  //         style: TextStyle(
-  //           fontSize: responsiveFontSize,
-  //           fontWeight: FontWeight.w100,
-  //           fontFamily: 'Satisfy',           
-  //           color: Colors.white
-  //         ),
-  //       ),
-  //     ),
-  //     leading: Builder(
-  //       builder: (BuildContext context) {
-  //         return IconButton(
-  //           icon: const Icon(
-  //             Icons.exit_to_app_rounded,
-  //             color: Colors.white,
-  //           ),
-  //           onPressed: () async {
-  //             LogOutApp.instance.finishApp();
-
-  //             // emitir un estado limpio              
-  //             addressBloc.add(const OnClearStateEvent());
-  //             Navigator.pushReplacementNamed(context, 'login');
-  //           },
-  //         );
-  //       },
-  //     ),
-  //   );
-  // }
+  
 }
