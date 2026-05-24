@@ -1,5 +1,3 @@
-
-
 import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
@@ -9,6 +7,7 @@ import 'package:flutter_background_service/flutter_background_service.dart';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:inri_driver/constants/time_notification.dart';
+import 'package:inri_driver/models/address.dart';
 
 import 'package:inri_driver/service/addresses_service.dart';
 import 'package:inri_driver/service/location_service.dart';
@@ -143,17 +142,21 @@ void onStart(ServiceInstance service) async {
   }
 
   // Timer que corre cada 1 minuto
-  Timer.periodic(const Duration(minutes: 1), (timer) async {
+  Timer.periodic(const Duration(seconds: 45), (timer) async {
+
     try {
+
       final isActiveOrder = await LocationService.instance.isActiveOrder();
       final existUserIdAndToken = await LocationService.instance.getIdUserAndToken();
       final idOrder =  await StorageService.instance.getIdOrder(); 
-      final alreadyNotified = await StorageService.instance.isAlreadyNotified(idOrder);
+      final lastNotified = await StorageService.instance.getLastNotifiedOrderId();
 
-      if (isActiveOrder && existUserIdAndToken && !alreadyNotified) {
-        if (service is AndroidServiceInstance &&
-            await service.isForegroundService()) {
-          final hasAddress = await existAddress();
+      if (isActiveOrder && existUserIdAndToken && idOrder != null && idOrder != lastNotified) {
+
+        if (service is AndroidServiceInstance && await service.isForegroundService()) {
+
+          final address = await getStatusAddress();
+          final hasAddress =  address.id != null && address.idDriver != '0';
 
           if (hasAddress) {
            
@@ -180,8 +183,9 @@ void onStart(ServiceInstance service) async {
                 ),
               ),
             );
+            await StorageService.instance.saveLastNotifiedOrderId(idOrder);
 
-            await StorageService.instance.saveNotified(idOrder);
+            //await StorageService.instance.saveNotified(idOrder);
           }
 
         }
@@ -194,9 +198,10 @@ void onStart(ServiceInstance service) async {
  );
 }
 
-Future<bool> existAddress() async {
+Future<Address> getStatusAddress() async {
   final address = await AddressService().getAddressesBackground();
-  return address.id != null;
+ 
+  return address;
 }
 
 

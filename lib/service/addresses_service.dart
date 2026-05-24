@@ -20,7 +20,7 @@ class AddressService {
   final storage = StorageService.instance;
   final funtions = Functions.instance;
 
-  Future getAddressesBackground() async {
+  Future<Address> getAddressesBackground() async {
     
     final token = await storage.getTokenUser();
     final idUser = await storage.getId();
@@ -56,7 +56,7 @@ class AddressService {
 
       //convert data a Address Model
       await storage.deleteIdOrder();
-      final date = Address(id: null);
+      final date = Address(id: null, idDriver: '0');
       final result = date;
 
       return result;
@@ -66,7 +66,7 @@ class AddressService {
 
       await storage.deleteIdOrder();
 
-      final date = Address(id: null);
+      final date = Address(id: null, );
       final result = date;
       return result;
 
