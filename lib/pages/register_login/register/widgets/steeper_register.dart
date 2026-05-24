@@ -34,20 +34,7 @@ class _BuildSteeperFormRegistrationState
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<ImagesBloc, ImagesState>(
-      listenWhen: (previous, current) =>
-        previous.isImagePermissionGranted != current.isImagePermissionGranted,
-      listener: (context, state) {
-        // Solo mostramos el SnackBar si NO se concedió el permiso
-      if (!state.isImagePermissionGranted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Debes habilitar el permiso de imágenes para continuar.'),
-          ),
-        );
-      }
-      },
-      child: BlocBuilder<AuthBloc, AuthState>(
+    return BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
           return GestureDetector(
             onTap: () => FocusScope.of(context).unfocus(),
@@ -67,22 +54,6 @@ class _BuildSteeperFormRegistrationState
                   currentStep: _currentStep,
                   onStepContinue: () async {
                     if (!_validarStepActual()) return;
-
-                    // 🔥 Pedir permisos justo antes del último formulario
-                    if (_currentStep == 1) {
-                      // Antes de FormStepThree
-                      final imagesBloc = context.read<ImagesBloc>();
-                      // Chequea el estado actual
-                      final granted = imagesBloc.state.isImagePermissionGranted;
-
-                      if (!granted) {
-                        await imagesBloc.requestImagePermission();
-
-                        await Future.delayed(const Duration(milliseconds: 200));
-                       
-                        if (!imagesBloc.state.isImagePermissionGranted) return;
-                      }
-                    }
 
                     if (_currentStep < 2) {
                       setState(() {
@@ -261,7 +232,6 @@ class _BuildSteeperFormRegistrationState
             ),
           );
         },
-      ),
-    );
+      );
   }
 }
