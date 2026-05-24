@@ -34,7 +34,7 @@ if (keystorePropertiesFile.exists()) {
 
 android {
 
-    compileSdkVersion 35 //modificado 
+    compileSdkVersion 36
     namespace 'com.luisleonidasfernandez.flutterinridriver' 
     //flutter.compileSdkVersion
     
