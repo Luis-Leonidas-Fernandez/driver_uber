@@ -12,12 +12,6 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC"/>
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>  
-    <!-- Permiso obligatorio para imágenes en Android 13+ -->
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    <!-- Compatibilidad para dispositivos viejos y para Permission.storage -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />  
-       
-
    <application
         android:label="Inri Driver: para conductores"
         android:name="${applicationName}"
