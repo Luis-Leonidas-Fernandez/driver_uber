@@ -5,7 +5,6 @@ import 'package:inri_driver/styles/containers_decorations.dart';
 import 'package:inri_driver/styles/text_field_decorations.dart';
 import 'package:inri_driver/utils/responsive_utils.dart';
 import 'package:inri_driver/validators/input_field_validator.dart';
-import 'package:inri_driver/widgets/dialogs/alert_screen.dart';
 import 'package:inri_driver/widgets/buttons/btn_reusable.dart';
 
 
@@ -115,34 +114,34 @@ class _ImputsUserLoginState extends State<ImputsUserLogin> {
               child: _buildInputField(fields[1], screenWidth, isFullWidth: true),
             ),  
           const SizedBox(height: 20),
-          ButtonReusable(
-            text: 'Ingresar',
-            onPressed: authUser.state.usuario != null
-                ? () {}
-                : () async {
-                    if (!_formKey.currentState!.validate()) {
-                      return; // Si algún campo falla, no sigue
-                    }
 
-                    final loginOk = await authUser.initLogin(
-                      emailCtrl.text.trim(),
-                      passCtrl.text.trim(),
-                    );
 
-                    if (!context.mounted) return;
 
-                    if (loginOk) {
+          BlocBuilder<AuthBloc, AuthState>(
+            builder: (context, state) {
+              final isLoading = state is UserLoggingInState;
+              final hasError = state.hasError;
+            
+            return ButtonReusable(
+              text: isLoading ? 'Ingresando...': 'Ingresar',
+              onPressed: hasError || state.usuario != null ? () {}
+                  : () async {
+                    
+                      if (!_formKey.currentState!.validate()) return; // Si algún campo falla, no sigue
                       
-                      Navigator.pushReplacementNamed(
-                      context, 'loading');
-                    } else {
-                      mostrarAlerta(
-                        context,
-                        'Login incorrecto',
-                        'Revise sus credenciales nuevamente',
+            
+                      await authUser.initLogin(
+                        emailCtrl.text.trim(),
+                        passCtrl.text.trim(),
                       );
-                    }
-                  },
+            
+                      if (!context.mounted) return;
+            
+                      // El BlocListener en LoginPage maneja la navegación automáticamente
+                      // No necesitamos manejar aquí ni éxito ni error
+                    },
+              );
+            },
           ),
         ],
       ),
@@ -164,7 +163,13 @@ class _ImputsUserLoginState extends State<ImputsUserLogin> {
       child: Row(
         children: [
           _buildIconContainer(field.icon, screenHeight),
-          Expanded(child: _buildTextFormField(field, screenHeight)),
+          Expanded(
+            child: Container(
+              height: double.infinity,
+              alignment: Alignment.centerLeft,
+              child: _buildTextFormField(field, screenHeight),
+            ),
+          ),
         ],
       ),
     );
@@ -193,29 +198,46 @@ class _ImputsUserLoginState extends State<ImputsUserLogin> {
   }
 
   Widget _buildTextFormField(InputFieldConfig field, double screenHeight) {
-    return TextFormField(
-      controller: field.controller,
-      focusNode: field.focusNode,
-      cursorColor: Colors.white,
-      autocorrect: false,
-      keyboardType: field.inputType,
-      obscureText: field.hintText.toLowerCase().contains('contraseña'),
-      style: TextFieldStyles.textFieldTextStyle(),
-      decoration: TextFieldStyles.inputDecoration(screenHeight, field.hintText),
-      validator: (value) {
-      for (final validator in field.validator) {
-       final result = validator(value);
-       if (result != null) return result;  // Si un validador falla, retorna el mensaje
-       }
-         return null; // Si ninguna validación falla, es válido
-      },
-      onFieldSubmitted: (_) {
-        if (field.nextFocusNode != null) {
-          FocusScope.of(context).requestFocus(field.nextFocusNode);
-        } else {
-          FocusScope.of(context).unfocus();
-        }
-      },
+    return SizedBox(
+      height: double.infinity,
+      child: TextFormField(
+        controller: field.controller,
+        focusNode: field.focusNode,
+        cursorColor: Colors.white,
+        cursorWidth: 2.0,
+        cursorHeight: 20.0,
+        autocorrect: false,
+        enableSuggestions: false,
+        keyboardType: field.inputType,
+        obscureText: field.hintText.toLowerCase().contains('contraseña'),
+        style: TextFieldStyles.textFieldTextStyle(),
+        decoration: TextFieldStyles.inputDecoration(screenHeight, field.hintText),
+        textAlignVertical: TextAlignVertical.center,
+        onTap: () {
+          // Forzar el enfoque inmediatamente
+          field.focusNode.requestFocus();
+        },
+        onChanged: (value) {
+          // Asegurar que el cursor esté visible
+          if (field.focusNode.hasFocus) {
+            field.focusNode.requestFocus();
+          }
+        },
+        validator: (value) {
+        for (final validator in field.validator) {
+         final result = validator(value);
+         if (result != null) return result;  // Si un validador falla, retorna el mensaje
+         }
+           return null; // Si ninguna validación falla, es válido
+        },
+        onFieldSubmitted: (_) {
+          if (field.nextFocusNode != null) {
+            FocusScope.of(context).requestFocus(field.nextFocusNode);
+          } else {
+            FocusScope.of(context).unfocus();
+          }
+        },
+      ),
     );
   }
 }

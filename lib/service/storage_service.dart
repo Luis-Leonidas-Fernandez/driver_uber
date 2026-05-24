@@ -86,23 +86,30 @@ class StorageService {
      await storage.delete(key: 'idOrder', aOptions: _getAndroidOptions());       
       
   }
-   //manejo de notificaciones
-
-  Future<void> saveNotified(String? orderId) async {
-    await storage.write(key: 'notified_$orderId', value: 'true');
-  }
-
-   // Consultar si ya fue notificado por id de orden
-  Future<bool> isAlreadyNotified(String? orderId) async {
-    final value = await storage.read(key: 'notified_$orderId');
-    return value == 'true';
-  }
 
   // Limpiar notificación previa (opcional si querés resetear)
   Future<void> clearNotified(String? orderId) async {
     await storage.delete(key: 'notified_$orderId');
   }
 
-  
+  // Guardar el último ID notificado
+Future<void> saveLastNotifiedOrderId(String orderId) async {
+  await storage.write(
+    key: 'last_notified_order_id',
+    value: orderId,
+    aOptions: _getAndroidOptions(),
+  );
+}
+
+// Obtener el último ID notificado
+Future<String?> getLastNotifiedOrderId() async {
+  return await storage.read(
+    key: 'last_notified_order_id',
+    aOptions: _getAndroidOptions(),
+  );
+}
+
+
+
 
 }

@@ -48,12 +48,11 @@ class ParseData{
 
     final dataMap = jsonDecode(data)["address"]; 
     final Map<String, dynamic> response = dataMap ?? newMap; 
-    final object  = Address.fromJson(response);
+    final addressParsed  = Address.fromJson(response);
     
     await Future.delayed(const Duration(seconds: 3));
     
-    
-    Isolate.exit(resultPort, object); 
+    Isolate.exit(resultPort, addressParsed); 
         
     
   }

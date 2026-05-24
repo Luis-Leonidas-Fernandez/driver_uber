@@ -36,3 +36,33 @@ class OnUpdateUserEvent extends AuthEvent {
   @override
   List<Object> get props => [usuarioActualizado];
 }
+
+class OnRegisterErrorEvent extends AuthEvent {
+  final String message;
+  final String? errorCode;
+  
+  const OnRegisterErrorEvent({
+    required this.message,
+    this.errorCode,
+  });
+  
+  @override
+  List<Object> get props => [message, errorCode ?? ''];
+}
+
+class OnLoginErrorEvent extends AuthEvent {
+  final String message;
+  final String? errorCode;
+  
+  const OnLoginErrorEvent({
+    required this.message,
+    this.errorCode,
+  });
+  
+  @override
+  List<Object> get props => [message, errorCode ?? ''];
+}
+
+class OnClearErrorEvent extends AuthEvent {
+  const OnClearErrorEvent();
+}

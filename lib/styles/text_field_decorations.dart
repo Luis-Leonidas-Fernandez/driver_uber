@@ -16,6 +16,11 @@ class TextFieldStyles {
   }
 
   static TextStyle textFieldTextStyle() {
-    return const TextStyle(color: Colors.white);
+    return const TextStyle(
+      color: Colors.white,
+      fontSize: 16,
+      fontWeight: FontWeight.w400,
+      letterSpacing: 0.5,
+    );
   }
 }

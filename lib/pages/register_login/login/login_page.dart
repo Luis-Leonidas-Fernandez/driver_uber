@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:inri_driver/animation/animate_page.dart';
+import 'package:inri_driver/blocs/user/auth_bloc.dart';
 import 'package:inri_driver/constants/constants.dart';
 import 'package:inri_driver/pages/privacy_page.dart';
 import 'package:inri_driver/widgets/forms/inputs.dart';
+import 'package:inri_driver/widgets/dialogs/error_display.dart';
 
 
 class LoginPage extends StatefulWidget {
@@ -107,70 +110,96 @@ class _FormImputsState extends State<FormImputs> {
 
   final heigthScreen = MediaQuery.of(context).size.height;
 
-  return SingleChildScrollView(
-    child: Container(
-      height: 700,
-      color: Colors.transparent,
-      child: Column(
-  children: [
-    Text('¡Hola de Nuevo!',
-        style: GoogleFonts.lobsterTwo(
-            fontSize: 48,
-            color: AppConstants.textColor,
-            shadows: <Shadow>[
-              const Shadow(color: Colors.black87, blurRadius: 20.0)
-            ])),
-    const SizedBox(height: 10),
-    ShaderMask(
-      shaderCallback: (bounds) {
-        return const RadialGradient(
-            center: Alignment.topRight,
-            radius: 4.0,
-            colors: [
-              Color.fromARGB(255, 99, 47, 241),
-              Color.fromARGB(255, 42, 138, 248), 
-            ]).createShader(bounds);
-      },
-      child: Text('Bienvenido, a Inri Conductor',
-          style: GoogleFonts.roboto(
-              fontSize: 18,
-              color: AppConstants.textColor,
-              fontWeight: FontWeight.bold)),
-    ),
-    SizedBox(height: heigthScreen *0.30),
-    
-    const ImputsUserLogin(),   
-    
-    const SizedBox(height: 25),
-    Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const Text(
-          '¿Aun no Tienes Cuenta?',
-          style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Color.fromARGB(255, 221, 203, 252)),
+  return BlocListener<AuthBloc, AuthState>(
+    listener: (context, state){
+       if (state.usuario != null) {
+        // Login exitoso - navegar a loading
+        Navigator.pushReplacementNamed(context, 'loading');
+       }
+    },
+    child: SingleChildScrollView(
+      child: Container(
+        constraints: BoxConstraints(
+          minHeight: 700,
+          maxHeight: MediaQuery.of(context).size.height * 1.2,
         ),
-        const SizedBox(width: 10),
-        TextButton(
-            onPressed: () {
-              
-                 Navigator.of(context).push(     
-              AnimatePage(child: const PrivacyPage())    
-              );   
-              
-            },
-            child: Text(
-              'Registrate Aqui',
-              style:
-                  TextStyle(fontWeight: FontWeight.bold, color: AppConstants.yellow),
-            ))
-      ],
-    )
-  ],
+        color: Colors.transparent,
+        child: Column(
+    children: [
+      Text('¡Hola de Nuevo!',
+          style: GoogleFonts.lobsterTwo(
+              fontSize: 48,
+              color: AppConstants.textColor,
+              shadows: <Shadow>[
+                const Shadow(color: Colors.black87, blurRadius: 20.0)
+              ])),
+      const SizedBox(height: 10),
+      ShaderMask(
+        shaderCallback: (bounds) {
+          return const RadialGradient(
+              center: Alignment.topRight,
+              radius: 4.0,
+              colors: [
+                Color.fromARGB(255, 99, 47, 241),
+                Color.fromARGB(255, 42, 138, 248), 
+              ]).createShader(bounds);
+        },
+        child: Text('Bienvenido, a Inri Conductor',
+            style: GoogleFonts.roboto(
+                fontSize: 18,
+                color: AppConstants.textColor,
+                fontWeight: FontWeight.bold)),
+      ),
+      SizedBox(height: heigthScreen * 0.25),
+      
+      const ImputsUserLogin(),   
+      
+      // Widget para mostrar errores
+      BlocBuilder<AuthBloc, AuthState>(
+        builder: (context, state) {
+          return ErrorDisplayWidget(
+            state: state,
+            onClearError: () => context.read<AuthBloc>().clearError(),
+          );
+        },
+      ),
+      
+      const SizedBox(height: 20),
+      Wrap(
+        alignment: WrapAlignment.center,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          const Text(
+            '¿Aun no Tienes Cuenta?',
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Color.fromARGB(255, 221, 203, 252)),
+          ),
+          const SizedBox(width: 10),
+          TextButton(
+              onPressed: () {
+                
+                   Navigator.of(context).push(     
+                AnimatePage(child: const PrivacyPage())    
+                );   
+                
+              },
+              child: Text(
+                'Registrate Aqui',
+                style:
+                    TextStyle(fontWeight: FontWeight.bold, color: AppConstants.yellow),
+              ))
+        ],
+      )
+    ],
+        ),
       ),
     ),
   );
 }
 
+
+
 }
+
+
