@@ -1,330 +1,294 @@
-# 🚗 Driver Uber - Sistema de Autenticación
+# 🚗 Inri Driver
+
+Aplicación Flutter para conductores con autenticación, registro con carga de imágenes, permisos de notificaciones, geolocalización y publicación Android automatizada con GitHub Actions.
 
 ## 📋 Índice
-- [Descripción General](#descripción-general)
-- [Arquitectura](#arquitectura)
-- [Flujo de Autenticación](#flujo-de-autenticación)
-- [Manejo de Errores](#manejo-de-errores)
-- [Tipos de Error](#tipos-de-error)
-- [Uso en la UI](#uso-en-la-ui)
-- [Estructura del Proyecto](#estructura-del-proyecto)
-- [Instalación](#instalación)
 
-## 🎯 Descripción General
+- [Descripción general](#-descripción-general)
+- [Stack actual](#-stack-actual)
+- [Arquitectura actual](#-arquitectura-actual)
+- [Flujos principales](#-flujos-principales)
+- [Manejo de errores](#-manejo-de-errores)
+- [Estructura del proyecto](#-estructura-del-proyecto)
+- [Configuración y arranque](#-configuración-y-arranque)
+- [Release Android / Google Play](#-release-android--google-play)
 
-Sistema de autenticación robusto para conductores de Uber con manejo avanzado de errores, validaciones y estados. Implementa patrones de Clean Architecture y BLoC para un código mantenible y escalable.
+## 🎯 Descripción general
 
-## 🏗️ Arquitectura
+El proyecto implementa la app de conductores de Inri Driver. Hoy el foco real del código está en:
 
-### **Patrón BLoC (Business Logic Component)**
-```
-UI Layer (Widgets) 
-    ↓
-BLoC Layer (AuthBloc)
-    ↓
-Service Layer (AuthService)
-    ↓
-Data Layer (API/Storage)
-```
+- autenticación y renovación de sesión
+- registro de conductores
+- carga de fotos del carnet desde galería
+- permisos de notificaciones
+- geolocalización y background service
+- tarifas cargadas desde assets
+- release Android automatizado por GitHub Actions
 
-### **Componentes Principales**
-- **`AuthBloc`**: Maneja estados y lógica de negocio
-- **`AuthService`**: Comunicación con API
-- **`ErrorUtils`**: Manejo centralizado de errores
-- **`RegisterUserController`**: Gestión de formularios
+## 🧰 Stack actual
 
-## 🔐 Flujo de Autenticación
+### Dependencias principales verificadas
 
-### **1. Registro de Usuario**
-
-```mermaid
-graph TD
-    A[Usuario llena formulario] --> B[RegisterUserController.agregarNuevoUsuario()]
-    B --> C[AuthBloc._sendUser()]
-    C --> D[AuthBloc._initRegister()]
-    D --> E[AuthService.register()]
-    E --> F{¿Registro exitoso?}
-    F -->|Sí| G[OnAddUserSessionEvent]
-    F -->|No| H[OnRegisterErrorEvent]
-    G --> I[Usuario autenticado]
-    H --> J[Mostrar error en UI]
-```
-
-### **2. Login de Usuario**
-
-```mermaid
-graph TD
-    A[Usuario ingresa credenciales] --> B[AuthBloc.initLogin()]
-    B --> C[AuthService.loginUser()]
-    C --> D{¿Login exitoso?}
-    D -->|Sí| E[OnAddUserSessionEvent]
-    D -->|No| F[OnLoginErrorEvent]
-    E --> G[Usuario autenticado]
-    F --> H[Mostrar error en UI]
-```
-
-## ⚠️ Manejo de Errores
-
-### **Estrategia de Manejo**
-
-1. **Manejo Específico**: Captura excepciones específicas primero
-2. **Fallback Genérico**: Usa `ErrorUtils` para casos no específicos
-3. **Categorización**: Clasifica errores por tipo para mejor UX
-
-### **Flujo de Manejo de Errores**
-
-```mermaid
-graph TD
-    A[Error ocurre] --> B{¿Es excepción específica?}
-    B -->|Sí| C[Manejo específico]
-    B -->|No| D[ErrorUtils.handleError()]
-    C --> E[Emitir estado de error]
-    D --> F[Analizar patrón de error]
-    F --> G[Obtener mensaje y código]
-    G --> E
-    E --> H[UI muestra error]
-```
-
-## 🚨 Tipos de Error
-
-### **Excepciones Específicas**
-
-| Excepción | Cuándo ocurre | Mensaje | Código |
-|-----------|---------------|---------|---------|
-| `NetworkException` | Sin conexión | "Sin conexión a internet. Verifica tu red." | `NETWORK_ERROR` |
-| `ServerException` | Error del servidor | "Error del servidor. Intenta más tarde." | `SERVER_ERROR` |
-| `ClientException` | Error del cliente | "Credenciales incorrectas." | `UNAUTHORIZED_ERROR` |
-| `ValidationException` | Datos inválidos | "El formato del email no es válido." | `INVALID_EMAIL_ERROR` |
-| `TimeoutException` | Tiempo agotado | "Tiempo de espera agotado. Intenta nuevamente." | `TIMEOUT_ERROR` |
-| `ParseException` | Error de parsing | "Error al procesar la respuesta del servidor." | `PARSE_ERROR` |
-
-### **Patrones de Error (ErrorUtils)**
-
-```dart
-// Ejemplos de patrones detectados
-'socketexception|network'     → NetworkError
-'timeoutexception|timeout'    → TimeoutError
-'formatexception|parse'       → ParseError
-'unauthorized|401'            → UnauthorizedError
-'forbidden|403'               → ForbiddenError
-'not found|404'               → NotFoundError
-'server error|500'            → ServerError
-'email.*invalid'              → InvalidEmailError
-'password.*weak'              → WeakPasswordError
-```
-
-## 🎨 Uso en la UI
-
-### **1. Escuchar Estados**
-
-```dart
-BlocConsumer<AuthBloc, AuthState>(
-  listener: (context, state) {
-    if (state is UserRegisterErrorState) {
-      // Mostrar error de registro
-      _showErrorDialog(state.message, state.errorCode);
-    } else if (state is UserLoginErrorState) {
-      // Mostrar error de login
-      _showErrorDialog(state.message, state.errorCode);
-    } else if (state is UserRegisteringState) {
-      // Mostrar loading de registro
-      _showLoadingDialog();
-    }
-  },
-  builder: (context, state) {
-    // Construir UI según estado
-  },
-)
-```
-
-### **2. Manejar Errores Específicos**
-
-```dart
-void _showErrorDialog(String message, String? errorCode) {
-  showDialog(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: Text('Error'),
-      content: Text(message),
-      actions: [
-        if (errorCode == 'NETWORK_ERROR' || errorCode == 'SERVER_ERROR')
-          TextButton(
-            onPressed: () {
-              // Reintentar operación
-              context.read<AuthBloc>().add(RegisterUserEvent());
-            },
-            child: Text('Reintentar'),
-          ),
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text('Cerrar'),
-        ),
-      ],
-    ),
-  );
-}
-```
-
-### **3. Estados Disponibles**
-
-```dart
-// Estados de carga
-UserRegisteringState()    // Registrando usuario
-UserLoggingInState()      // Iniciando sesión
-
-// Estados de error
-UserRegisterErrorState(message: 'Error', errorCode: 'CODE')
-UserLoginErrorState(message: 'Error', errorCode: 'CODE')
-
-// Estados de éxito
-AuthState(usuario: usuario, authenticando: true)  // Usuario autenticado
-```
-
-## 📁 Estructura del Proyecto
-
-```
-lib/
-├── blocs/user/
-│   ├── auth_bloc.dart          # Lógica de autenticación
-│   ├── auth_event.dart         # Eventos de autenticación
-│   └── auth_state.dart         # Estados de autenticación
-├── service/
-│   └── auth_service.dart       # Comunicación con API
-├── utils/
-│   ├── error_utils.dart        # Manejo de errores
-│   └── error_constants.dart    # Constantes de error
-├── exceptions/
-│   └── auth_exceptions.dart    # Excepciones personalizadas
-├── controllers/
-│   └── register_user_controllers.dart  # Controladores de formulario
-└── models/
-    ├── usuario.dart            # Modelo de usuario
-    └── login.dart              # Modelo de respuesta de login
-```
-
-## 🚀 Instalación
-
-### **Dependencias Principales**
+Según `/Users/luis/Desktop/driver_uber/pubspec.yaml`, el proyecto usa actualmente:
 
 ```yaml
 dependencies:
-  flutter_bloc: ^8.1.3
-  hydrated_bloc: ^9.1.5
-  equatable: ^2.0.5
+  bloc: ^9.0.0
+  flutter_bloc: ^9.1.0
+  hydrated_bloc: ^10.0.0
   http: ^1.1.0
+  http_parser: ^4.0.2
   flutter_secure_storage: ^9.0.0
+  connectivity_plus: ^5.0.2
+  geolocator: ^14.0.2
+  geocoding: ^3.0.0
+  flutter_map: ^7.0.0
+  flutter_local_notifications: ^19.0.3
+  flutter_background_service: ^5.0.5
+  flutter_background_service_android: ^6.2.2
+  google_fonts: ^8.1.0
+  image_picker: ^1.1.2
+  permission_handler: ^12.0.1
+  provider: ^6.1.1
+  socket_io_client: ^3.1.2
+  webview_flutter: ^4.5.0
 ```
 
-### **Configuración Inicial**
+## 🏗️ Arquitectura actual
+
+La app sigue principalmente un enfoque basado en BLoC + Services + Controllers.
+
+```text
+UI / Pages / Widgets
+        ↓
+Bloc Layer
+        ↓
+Controllers / Services
+        ↓
+API / Storage / Background / Device features
+```
+
+### Componentes importantes
+
+- `AuthBloc`: login, registro, errores de autenticación, sesión
+- `ImagesBloc`: estado simple del flujo de imágenes
+- `NotificationBloc`: permisos de notificaciones
+- `AddressBloc`, `LocationBloc`, `MapBloc`: ubicación y flujo operativo del conductor
+- `AuthService`: login, register, renew, serialización de respuesta
+- `RegisterUserController`: armado de formulario y selección de imágenes
+- `StorageService`: token, user id, estado de notificaciones, ordenes notificadas
+
+## 🔐 Flujos principales
+
+### 1) Registro de conductor
+
+```mermaid
+graph TD
+    A[Stepper de registro] --> B[RegisterUserController]
+    B --> C[Selección de imágenes con image_picker]
+    C --> D[AuthBloc RegisterUserEvent]
+    D --> E[AuthService.register]
+    E --> F{Registro OK?}
+    F -->|Sí| G[Sesión iniciada]
+    F -->|No| H[Estados de error]
+```
+
+### 2) Login
+
+```mermaid
+graph TD
+    A[Usuario ingresa email y password] --> B[AuthBloc.initLogin]
+    B --> C[AuthService.loginUser]
+    C --> D{Login OK?}
+    D -->|Sí| E[Guardar token y usuario]
+    D -->|No| F[UserLoginErrorState o AuthErrorState]
+```
+
+### 3) Carga de imágenes
+
+El proyecto usa `image_picker` para seleccionar imágenes desde galería.
+
+- no depende de permisos amplios de lectura de fotos en el manifest
+- el flujo actual está alineado con selección puntual desde el picker del sistema
+- las rutas de archivo seleccionadas se guardan en `RegisterUserController`
+
+## ⚠️ Manejo de errores
+
+El proyecto tiene manejo tipado de errores de autenticación.
+
+### Excepciones disponibles
+
+- `NetworkException`
+- `ServerException`
+- `ClientException`
+- `ValidationException`
+- `ParseException`
+- `TimeoutException`
+- `StorageException`
+- `UnknownAuthException`
+
+### Estados de error relevantes
+
+Verificados en `/Users/luis/Desktop/driver_uber/lib/blocs/user/auth_state.dart`:
 
 ```dart
-void main() {
-  HydratedBloc.storage = await HydratedStorage.build();
-  
+UserRegisterErrorState(
+  message: '...',
+  errorCode: '...',
+)
+
+UserLoginErrorState(
+  message: '...',
+  errorCode: '...',
+)
+
+AuthErrorState(
+  message: '...',
+  errorCode: '...',
+  errorType: AuthExceptionType.network,
+)
+```
+
+### Campos reales del estado
+
+El `AuthState` actual expone:
+
+```dart
+final bool? authenticando;
+final Usuario? usuario;
+final String? errorMessage;
+final String? errorCode;
+final bool hasError;
+final AuthExceptionType? errorType;
+```
+
+## 🧱 Estructura del proyecto
+
+```text
+lib/
+├── blocs/
+│   ├── user/
+│   ├── images/
+│   ├── base/
+│   └── ...
+├── controllers/
+├── exceptions/
+├── models/
+├── pages/
+│   ├── register_login/
+│   ├── images_acces.dart
+│   ├── notifications_access.dart
+│   └── ...
+├── repositories/
+├── routes/
+├── service/
+├── styles/
+├── utils/
+├── validation/
+└── widgets/
+    ├── dialogs/
+    ├── error_handling/
+    ├── forms/
+    └── ...
+```
+
+## 🚀 Configuración y arranque
+
+### Assets relevantes
+
+En `pubspec.yaml` están declarados:
+
+- `assets/car2.webp`
+- `assets/icon.webp`
+- `assets/remis.webp`
+- `assets/map.webp`
+- `assets/fontana.webp`
+- `assets/barranqueras.webp`
+- `assets/logo.png`
+- `assets/background_image.webp`
+- `assets/car_b.png`
+- `assets/tarifas.json`
+
+### Arranque real de la app
+
+El `main()` actual:
+
+- inicializa Flutter bindings
+- carga tarifas desde `assets/tarifas.json`
+- inicializa `HydratedBloc.storage`
+- configura locale `es_ARG`
+- ajusta símbolos numéricos
+- registra múltiples blocs en `MultiBlocProvider`
+
+### Ejemplo resumido
+
+```dart
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final tarifas = await TarifarioLoader.cargarDesdeAssets();
+
+  HydratedBloc.storage = await HydratedStorage.build(
+    storageDirectory: kIsWeb
+      ? HydratedStorageDirectory.web
+      : HydratedStorageDirectory((await getTemporaryDirectory()).path),
+  );
+
+  Intl.defaultLocale = 'es_ARG';
+  initializeDateFormatting('es_ARG', '');
+
   runApp(
     MultiBlocProvider(
       providers: [
-        BlocProvider(
-          create: (context) => AuthBloc(
-            authService: AuthService(),
-            registerUserController: RegisterUserController(),
-          ),
-        ),
-        // ... otros providers
+        BlocProvider(create: (_) => AuthBloc(
+          authService: AuthService(),
+          registerUserController: RegisterUserController(),
+        )),
+        BlocProvider(create: (_) => ImagesBloc()),
+        BlocProvider(create: (_) => NotificationBloc()),
+        // ... otros blocs
       ],
-      child: MyApp(),
+      child: const MyApp(),
     ),
   );
 }
 ```
 
-## 🔧 Configuración de Errores
+## 📱 Release Android / Google Play
 
-### **Agregar Nuevo Tipo de Error**
+### Workflow actual
 
-1. **En `error_constants.dart`:**
-```dart
-static const Map<String, String> errorPatterns = {
-  // ... patrones existentes
-  'new_error': 'patron|regex',
-};
+El release Android se ejecuta con:
 
-static const Map<String, String> errorMessages = {
-  // ... mensajes existentes
-  'new_error': 'Mensaje amigable para el usuario',
-};
+- `/Users/luis/Desktop/driver_uber/.github/workflows/main.yml`
 
-static const Map<String, String> errorCodes = {
-  // ... códigos existentes
-  'new_error': 'NEW_ERROR_CODE',
-};
-```
+Ese workflow:
 
-2. **En `auth_exceptions.dart`:**
-```dart
-class NewException extends AuthException {
-  const NewException({
-    required String message,
-    String? code,
-  }) : super(message: message, code: code);
-}
-```
+- compila un `appbundle`
+- restaura keystore desde GitHub Secrets
+- puede subir a Google Play
 
-3. **En `auth_bloc.dart`:**
-```dart
-} on NewException catch (e) {
-  add(OnRegisterErrorEvent(
-    message: e.message,
-    errorCode: e.code,
-  ));
-}
-```
+### Inputs del workflow
 
-## 📚 Ejemplos de Uso
+- `track`
+- `build_name`
+- `build_number`
+- `dry_run`
 
-### **Registro de Usuario**
+### Estado actual del proyecto
 
-```dart
-// En tu UI
-void _registerUser() {
-  context.read<AuthBloc>().add(RegisterUserEvent());
-}
-```
+Configuración Android relevante verificada:
 
-### **Login de Usuario**
+- `compileSdkVersion 36`
+- `targetSdkVersion 35`
+- versión del repo: `2.0.4+14`
 
-```dart
-// En tu UI
-void _loginUser(String email, String password) {
-  context.read<AuthBloc>().initLogin(email, password);
-}
-```
+### Nota importante sobre Play
 
-### **Limpiar Errores**
+Para evitar rechazos por policy, la app ya no declara permisos amplios de lectura de fotos en el manifest. El flujo actual está pensado para selección puntual de imágenes mediante picker del sistema.
 
-```dart
-// En tu UI
-void _clearErrors() {
-  context.read<AuthBloc>().clearError();
-}
-```
+## 📝 Notas de mantenimiento
 
-## 🎯 Mejores Prácticas
-
-1. **Siempre maneja errores específicos primero**
-2. **Usa `ErrorUtils` como fallback**
-3. **Proporciona mensajes amigables al usuario**
-4. **Implementa retry para errores de red/servidor**
-5. **Mantén la lógica de error separada del BLoC**
-
-## 🤝 Contribución
-
-Para contribuir al proyecto:
-1. Sigue las convenciones de código existentes
-2. Agrega tests para nuevas funcionalidades
-3. Documenta cambios en el README
-4. Usa el patrón de manejo de errores establecido
-
----
-
-**¡Desarrollado con ❤️ para conductores de Uber!**
+- El README debe reflejar el código real, no una arquitectura idealizada.
+- Si cambia el flujo de registro, imágenes o release, actualizar este archivo.
+- Si cambia el workflow de Play, revisar también inputs y documentación de publicación.
