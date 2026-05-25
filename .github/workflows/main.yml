@@ -10,11 +10,11 @@ on:
       build_name:
         description: "versionName (ej: 2.0.4)"
         required: true
-        default: "2.0.4"
+        default: "2.0.5"
       build_number:
         description: "versionCode (ej: 14)"
         required: true
-        default: "14"
+        default: "15"
       dry_run:
         description: "Solo compilar (no subir a Play)"
         required: true
