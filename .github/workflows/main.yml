@@ -63,7 +63,9 @@ jobs:
       - name: Build appbundle (AAB)
         run: |
           flutter clean
-          flutter build appbundle --release
+          flutter build appbundle --release \
+            --build-name "${{ github.event.inputs.build_name }}" \
+            --build-number "${{ github.event.inputs.build_number }}"
           ls -lah build/app/outputs/bundle/release
 
       - name: Upload to Google Play
